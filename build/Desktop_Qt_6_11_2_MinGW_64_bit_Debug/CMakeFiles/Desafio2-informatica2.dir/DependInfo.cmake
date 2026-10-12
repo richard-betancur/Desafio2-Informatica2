@@ -9,6 +9,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "C:/Users/user/OneDrive/Documentos/Desafio2-informatica2/main.cpp" "CMakeFiles/Desafio2-informatica2.dir/main.cpp.obj" "gcc" "CMakeFiles/Desafio2-informatica2.dir/main.cpp.obj.d"
+  "C:/Users/user/OneDrive/Documentos/Desafio2-informatica2/redsocial.cpp" "CMakeFiles/Desafio2-informatica2.dir/redsocial.cpp.obj" "gcc" "CMakeFiles/Desafio2-informatica2.dir/redsocial.cpp.obj.d"
+  "C:/Users/user/OneDrive/Documentos/Desafio2-informatica2/usuario.cpp" "CMakeFiles/Desafio2-informatica2.dir/usuario.cpp.obj" "gcc" "CMakeFiles/Desafio2-informatica2.dir/usuario.cpp.obj.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

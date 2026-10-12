@@ -5,7 +5,12 @@ project(Desafio2-informatica2 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(Desafio2-informatica2 main.cpp)
+add_executable(Desafio2-informatica2
+    usuario.h
+    usuario.cpp
+    redsocial.h
+    redsocial.cpp
+    main.cpp)
 
 include(GNUInstallDirs)
 install(TARGETS Desafio2-informatica2

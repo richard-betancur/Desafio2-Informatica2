@@ -197,6 +197,54 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Desafio2-informatica2.dir\build.make CMakeFiles/Desafio2-informatica2.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+redsocial.obj: redsocial.cpp.obj
+.PHONY : redsocial.obj
+
+# target to build an object file
+redsocial.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Desafio2-informatica2.dir\build.make CMakeFiles/Desafio2-informatica2.dir/redsocial.cpp.obj
+.PHONY : redsocial.cpp.obj
+
+redsocial.i: redsocial.cpp.i
+.PHONY : redsocial.i
+
+# target to preprocess a source file
+redsocial.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Desafio2-informatica2.dir\build.make CMakeFiles/Desafio2-informatica2.dir/redsocial.cpp.i
+.PHONY : redsocial.cpp.i
+
+redsocial.s: redsocial.cpp.s
+.PHONY : redsocial.s
+
+# target to generate assembly for a file
+redsocial.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Desafio2-informatica2.dir\build.make CMakeFiles/Desafio2-informatica2.dir/redsocial.cpp.s
+.PHONY : redsocial.cpp.s
+
+usuario.obj: usuario.cpp.obj
+.PHONY : usuario.obj
+
+# target to build an object file
+usuario.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Desafio2-informatica2.dir\build.make CMakeFiles/Desafio2-informatica2.dir/usuario.cpp.obj
+.PHONY : usuario.cpp.obj
+
+usuario.i: usuario.cpp.i
+.PHONY : usuario.i
+
+# target to preprocess a source file
+usuario.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Desafio2-informatica2.dir\build.make CMakeFiles/Desafio2-informatica2.dir/usuario.cpp.i
+.PHONY : usuario.cpp.i
+
+usuario.s: usuario.cpp.s
+.PHONY : usuario.s
+
+# target to generate assembly for a file
+usuario.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Desafio2-informatica2.dir\build.make CMakeFiles/Desafio2-informatica2.dir/usuario.cpp.s
+.PHONY : usuario.cpp.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -213,6 +261,12 @@ help:
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s
+	@echo ... redsocial.obj
+	@echo ... redsocial.i
+	@echo ... redsocial.s
+	@echo ... usuario.obj
+	@echo ... usuario.i
+	@echo ... usuario.s
 .PHONY : help
 
 
