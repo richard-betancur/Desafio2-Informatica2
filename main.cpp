@@ -1,5 +1,6 @@
 #include <iostream>
 #include "redsocial.h"
+#include "usuario.h"
 
 using namespace std;
 
@@ -7,38 +8,70 @@ int main()
 {
     RedSocial red;
 
-    //Usuarios temporales para probar las clases
-    red.agregarUsuario("Richard111", "clave123");
-    red.agregarUsuario("Ana34", "clave456");
-    red.agregarUsuario("Simon786", "clave789");
+    // Prueba de la clase RedSocial
+    red.agregarUsuario("Richard34", "clave123");
+    red.agregarUsuario("Ana3232", "clave456");
 
-    cout << "=== Prueba inicial de Ude@Book ===\n\n";
+    cout << "=== PRUEBA DE Ude@Book ===\n\n";
 
-    cout << "Usuarios almacenados: "
-         << red.getCantidadUsuarios() << "\n\n";
+    // Crear un usuario con todos sus datos
+    Usuario usuario(
+        "pedro99",
+        "2005-08-14",
+        "pedro@example.com",
+        "/users/pedro99/albums/profile.png",
+        "clave789",
+        "Medellin",
+        "Colombia",
+        "2026-01-15"
+        );
 
-    string nombre;
-    string clave;
+    cout << "Datos del usuario:\n";
+    cout << "Nombre: " << usuario.getNombreUsuario() << '\n';
+    cout << "Nacimiento: " << usuario.getFechaNacimiento() << '\n';
+    cout << "Correo: " << usuario.getCorreo() << '\n';
+    cout << "Ruta del perfil: " << usuario.getRutaFotoPerfil() << '\n';
+    cout << "Ciudad: " << usuario.getCiudad() << '\n';
+    cout << "Pais: " << usuario.getPais() << '\n';
+    cout << "Inscripcion: " << usuario.getFechaInscripcion() << '\n';
 
-    cout << "Nombre de usuario: ";
-    cin >> nombre;
+    // Probar un setter
+    usuario.setCiudad("Bogota");
 
-    cout << "Contrasena: ";
-    cin >> clave;
+    cout << "\nCiudad despues del cambio: "
+         << usuario.getCiudad() << '\n';
 
-    Usuario* usuario = red.buscarUsuario(nombre);
-
-    if (usuario != nullptr &&
-        usuario->verificarContrasena(clave))
+    // Probar la verificacion de contrasena
+    if (usuario.verificarContrasena("clave789"))
     {
-        cout << "\nInicio de sesion de prueba correcto.\n";
-        cout << "Bienvenido, "
-             << usuario->getNombreUsuario() << "\n";
+        cout << "Contrasena correcta.\n";
     }
     else
     {
-        cout << "\nCredenciales incorrectas.\n";
+        cout << "Contrasena incorrecta.\n";
     }
+
+    // Probar el constructor de copia
+    Usuario copia(usuario);
+
+    cout << "\nUsuario copiado: "
+         << copia.getNombreUsuario() << '\n';
+
+    cout << "Ciudad del usuario copiado: "
+         << copia.getCiudad() << '\n';
+
+    // Verificar que la copia es independiente
+    copia.setCiudad("Cali");
+
+    cout << "\nCiudad original: "
+         << usuario.getCiudad() << '\n';
+
+    cout << "Ciudad de la copia: "
+         << copia.getCiudad() << '\n';
+
+    // Verificar que RedSocial sigue funcionando
+    cout << "\nUsuarios en RedSocial: "
+         << red.getCantidadUsuarios() << '\n';
 
     return 0;
 }
