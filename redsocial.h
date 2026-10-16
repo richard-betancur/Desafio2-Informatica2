@@ -108,6 +108,9 @@ public:
     int buscarMensajesPorFecha(const std::string& nombreUsuario,
                                const std::string& fechaInicio,
                                const std::string& fechaFin) const;
+
+    int mostrarMensajesRecibidosOrdenados(
+        const std::string& nombreUsuario) const;
 };
 
 #endif

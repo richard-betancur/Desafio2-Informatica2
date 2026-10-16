@@ -142,5 +142,7 @@ CMakeFiles/Desafio2-informatica2.dir/main.cpp.obj: \
  C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/ostream.tcc \
  C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/istream \
  C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/istream.tcc \
+ C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\redsocial.h \
  C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\usuario.h \
+ C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\solicitudamistad.h \
  C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\mensaje.h

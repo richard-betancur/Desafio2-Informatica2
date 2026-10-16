@@ -1,66 +1,60 @@
 #include <iostream>
-#include "usuario.h"
-#include "mensaje.h"
+#include "redsocial.h"
 
 using namespace std;
 
 int main()
 {
-    Usuario juan("juan", "clave1");
-    Usuario ana("ana", "clave2");
+    RedSocial red;
 
-    Mensaje mensaje(
-        &juan,
-        &ana,
-        "Hola Ana, como estas?",
-        "2026-10-16 10:30"
-        );
+    red.agregarUsuario("juan", "clave1");
+    red.agregarUsuario("ana", "clave2");
+    red.agregarUsuario("pedro", "clave3");
 
     cout << "=== PRUEBA DE MENSAJES ===\n\n";
 
-    cout << "Remitente: "
-         << mensaje.getRemitente()->getNombreUsuario() << "\n";
-
-    cout << "Destinatario: "
-         << mensaje.getDestinatario()->getNombreUsuario() << "\n";
-
-    cout << "Contenido: "
-         << mensaje.getContenido() << "\n";
-
-    cout << "Fecha: "
-         << mensaje.getFecha() << "\n";
-
-    cout << "Longitud: "
-         << mensaje.getContenido().length()
-         << " caracteres\n";
-
-    cout << "Mensaje valido: "
-         << (mensaje.esValido() ? "Si" : "No") << "\n";
-
-    cout << "Leido inicialmente: "
-         << (mensaje.estaLeido() ? "Si" : "No") << "\n";
-
-    mensaje.marcarLeido();
-
-    cout << "Leido despues de marcarlo: "
-         << (mensaje.estaLeido() ? "Si" : "No") << "\n";
-
-    Mensaje copia(mensaje);
-
-    cout << "Contenido de la copia: "
-         << copia.getContenido() << "\n";
-
-    string textoLargo(513, 'A');
-
-    Mensaje mensajeLargo(
-        &juan,
-        &ana,
-        textoLargo,
-        "2026-10-16 10:31"
+    red.enviarMensaje(
+        "juan", "ana",
+        "Mensaje del segundo dia",
+        "2026-10-16 14:00"
         );
 
-    cout << "Mensaje de 513 caracteres valido: "
-         << (mensajeLargo.esValido() ? "Si" : "No") << "\n";
+    red.enviarMensaje(
+        "pedro", "ana",
+        "Mensaje del primer dia",
+        "2026-10-15 09:00"
+        );
+
+    red.enviarMensaje(
+        "juan", "ana",
+        "Mensaje de la manana",
+        "2026-10-16 08:00"
+        );
+
+    cout << "Mensajes recibidos por Ana:\n\n";
+
+    int cantidad =
+        red.mostrarMensajesRecibidosOrdenados("ana");
+
+    cout << "Total recibidos: " << cantidad << "\n\n";
+
+    cout << "=== MENSAJES NO LEIDOS ===\n\n";
+
+    int noLeidos = red.leerMensajesNoLeidos("ana");
+
+    cout << "Mensajes marcados como leidos: "
+         << noLeidos << "\n\n";
+
+    cout << "=== BUSQUEDA POR FECHAS ===\n\n";
+
+    int encontrados = red.buscarMensajesPorFecha(
+        "ana",
+        "2026-10-16",
+        "2026-10-16"
+        );
+
+    cout << "Mensajes encontrados ese dia: "
+         << encontrados << "\n";
 
     return 0;
 }

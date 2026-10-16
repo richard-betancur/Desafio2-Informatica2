@@ -404,3 +404,55 @@ int RedSocial::buscarMensajesPorFecha(
 
     return encontrados;
 }
+
+int RedSocial::mostrarMensajesRecibidosOrdenados(
+    const std::string& nombreUsuario) const
+{
+    Usuario* receptor = buscarUsuario(nombreUsuario);
+
+    if (receptor == nullptr)
+        return -1;
+
+    // Reservar espacio para los mensajes recibidos
+    Mensaje** recibidos = new Mensaje*[cantidadMensajes];
+    int cantidadRecibidos = 0;
+
+    // Buscar los mensajes dirigidos a este usuario
+    for (int i = 0; i < cantidadMensajes; i++)
+    {
+        if (mensajes[i]->getDestinatario() == receptor)
+        {
+            recibidos[cantidadRecibidos] = mensajes[i];
+            cantidadRecibidos++;
+        }
+    }
+
+    // Ordenar por fecha ascendente mediante inserción
+    for (int i = 1; i < cantidadRecibidos; i++)
+    {
+        Mensaje* actual = recibidos[i];
+        int j = i - 1;
+
+        while (j >= 0 && *actual < *recibidos[j])
+        {
+            recibidos[j + 1] = recibidos[j];
+            j--;
+        }
+
+        recibidos[j + 1] = actual;
+    }
+
+    // Mostrar los mensajes del más antiguo al más reciente
+    for (int i = 0; i < cantidadRecibidos; i++)
+    {
+        cout << "De: " << recibidos[i]->getRemitente()->getNombreUsuario() << "\n";
+
+        cout << "Fecha: " << recibidos[i]->getFecha() << "\n";
+
+        cout << "Mensaje: " << recibidos[i]->getContenido() << "\n\n";
+    }
+
+    delete[] recibidos;
+
+    return cantidadRecibidos;
+}

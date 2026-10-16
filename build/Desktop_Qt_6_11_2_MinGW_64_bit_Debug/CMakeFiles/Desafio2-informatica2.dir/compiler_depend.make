@@ -300,6 +300,8 @@ CMakeFiles/Desafio2-informatica2.dir/main.cpp.obj: C:/Users/user/OneDrive/Docume
   C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/wchar.h \
   C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/wctype.h \
   C:/Users/user/OneDrive/Documentos/Desafio2-informatica2/mensaje.h \
+  C:/Users/user/OneDrive/Documentos/Desafio2-informatica2/redsocial.h \
+  C:/Users/user/OneDrive/Documentos/Desafio2-informatica2/solicitudamistad.h \
   C:/Users/user/OneDrive/Documentos/Desafio2-informatica2/usuario.h
 
 CMakeFiles/Desafio2-informatica2.dir/mensaje.cpp.obj: C:/Users/user/OneDrive/Documentos/Desafio2-informatica2/mensaje.cpp \
