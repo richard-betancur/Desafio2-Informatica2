@@ -1,16 +1,32 @@
 #ifndef REDSOCIAL_H
 #define REDSOCIAL_H
 
+#include <string>
 #include "usuario.h"
+#include "solicitudamistad.h"
 
 class RedSocial
 {
 private:
+    // Usuarios
     Usuario** usuarios;
     int cantidadUsuarios;
     int capacidadUsuarios;
 
+    // Solicitudes de amistad
+    SolicitudAmistad** solicitudes;
+    int cantidadSolicitudes;
+    int capacidadSolicitudes;
+
+    // Amistades mutuas: cada amistad conecta dos usuarios
+    Usuario** amigosA;
+    Usuario** amigosB;
+    int cantidadAmistades;
+    int capacidadAmistades;
+
     void ampliarCapacidad();
+    void ampliarSolicitudes();
+    void ampliarAmistades();
 
 public:
     RedSocial();
@@ -19,7 +35,10 @@ public:
     RedSocial(const RedSocial&) = delete;
     RedSocial& operator=(const RedSocial&) = delete;
 
-    bool agregarUsuario(const string& nombre, const string& clave);
+    // Usuarios
+    bool agregarUsuario(const string& nombre,
+                        const string& clave);
+
     bool agregarUsuario(const string& nombre,
                         const string& nacimiento,
                         const string& correo,
@@ -31,8 +50,21 @@ public:
 
     Usuario* buscarUsuario(const string& nombre) const;
     Usuario* obtenerUsuarioPorIndice(int indice) const;
-
     int getCantidadUsuarios() const;
+
+    // Solicitudes
+    bool enviarSolicitud(const string& nombreEmisor, const string& nombreReceptor, const string& fecha);
+
+    int getCantidadSolicitudes() const;
+
+    SolicitudAmistad* obtenerSolicitudPorIndice(int indice) const;
+
+    bool responderSolicitud(int indice, bool aceptar);
+
+    // Amistades
+    bool sonAmigos(const string& nombreA, const string& nombreB) const;
+
+    int getCantidadAmistades() const;
 };
 
 #endif

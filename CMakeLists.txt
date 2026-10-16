@@ -9,6 +9,8 @@ add_executable(Desafio2-informatica2
     main.cpp
     almacenamiento.h
     almacenamiento.cpp
+    solicitudamistad.cpp
+    solicitudamistad.h
     usuario.h
     usuario.cpp
     redsocial.h

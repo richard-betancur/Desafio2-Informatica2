@@ -245,6 +245,30 @@ redsocial.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Desafio2-informatica2.dir\build.make CMakeFiles/Desafio2-informatica2.dir/redsocial.cpp.s
 .PHONY : redsocial.cpp.s
 
+solicitudamistad.obj: solicitudamistad.cpp.obj
+.PHONY : solicitudamistad.obj
+
+# target to build an object file
+solicitudamistad.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Desafio2-informatica2.dir\build.make CMakeFiles/Desafio2-informatica2.dir/solicitudamistad.cpp.obj
+.PHONY : solicitudamistad.cpp.obj
+
+solicitudamistad.i: solicitudamistad.cpp.i
+.PHONY : solicitudamistad.i
+
+# target to preprocess a source file
+solicitudamistad.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Desafio2-informatica2.dir\build.make CMakeFiles/Desafio2-informatica2.dir/solicitudamistad.cpp.i
+.PHONY : solicitudamistad.cpp.i
+
+solicitudamistad.s: solicitudamistad.cpp.s
+.PHONY : solicitudamistad.s
+
+# target to generate assembly for a file
+solicitudamistad.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Desafio2-informatica2.dir\build.make CMakeFiles/Desafio2-informatica2.dir/solicitudamistad.cpp.s
+.PHONY : solicitudamistad.cpp.s
+
 usuario.obj: usuario.cpp.obj
 .PHONY : usuario.obj
 
@@ -291,6 +315,9 @@ help:
 	@echo ... redsocial.obj
 	@echo ... redsocial.i
 	@echo ... redsocial.s
+	@echo ... solicitudamistad.obj
+	@echo ... solicitudamistad.i
+	@echo ... solicitudamistad.s
 	@echo ... usuario.obj
 	@echo ... usuario.i
 	@echo ... usuario.s

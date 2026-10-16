@@ -5,7 +5,7 @@
 #include <fstream>
 #include <sstream>
 
-bool Almacenamiento::guardarUsuarios(const RedSocial& red, const std::string& rutaArchivo)
+bool Almacenamiento::guardarUsuarios(const RedSocial& red, const string& rutaArchivo)
 {
     ofstream archivo(rutaArchivo);
 
@@ -39,7 +39,7 @@ bool Almacenamiento::cargarUsuarios(RedSocial& red, const string& rutaArchivo)
         return false;
     string linea;
 
-    while (std::getline(archivo, linea))
+    while (getline(archivo, linea))
     {
         if (linea.empty())
             continue;

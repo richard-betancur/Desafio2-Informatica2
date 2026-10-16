@@ -1,6 +1,5 @@
 #include <iostream>
 #include "redsocial.h"
-#include "usuario.h"
 
 using namespace std;
 
@@ -8,70 +7,49 @@ int main()
 {
     RedSocial red;
 
-    // Prueba de la clase RedSocial
-    red.agregarUsuario("Richard34", "clave123");
-    red.agregarUsuario("Ana3232", "clave456");
+    red.agregarUsuario("juan", "clave1");
+    red.agregarUsuario("ana", "clave2");
+    red.agregarUsuario("pedro", "clave3");
 
-    cout << "=== PRUEBA DE Ude@Book ===\n\n";
+    cout << "=== PRUEBA DE SOLICITUDES ===\n\n";
 
-    // Crear un usuario con todos sus datos
-    Usuario usuario(
-        "pedro99",
-        "2005-08-14",
-        "pedro@example.com",
-        "/users/pedro99/albums/profile.png",
-        "clave789",
-        "Medellin",
-        "Colombia",
-        "2026-01-15"
-        );
-
-    cout << "Datos del usuario:\n";
-    cout << "Nombre: " << usuario.getNombreUsuario() << '\n';
-    cout << "Nacimiento: " << usuario.getFechaNacimiento() << '\n';
-    cout << "Correo: " << usuario.getCorreo() << '\n';
-    cout << "Ruta del perfil: " << usuario.getRutaFotoPerfil() << '\n';
-    cout << "Ciudad: " << usuario.getCiudad() << '\n';
-    cout << "Pais: " << usuario.getPais() << '\n';
-    cout << "Inscripcion: " << usuario.getFechaInscripcion() << '\n';
-
-    // Probar un setter
-    usuario.setCiudad("Bogota");
-
-    cout << "\nCiudad despues del cambio: "
-         << usuario.getCiudad() << '\n';
-
-    // Probar la verificacion de contrasena
-    if (usuario.verificarContraseña("clave789"))
-    {
-        cout << "Contrasena correcta.\n";
-    }
+    if (red.enviarSolicitud("juan", "ana", "2026-10-16"))
+        cout << "Solicitud de Juan a Ana enviada.\n";
     else
+        cout << "No se pudo enviar la solicitud.\n";
+
+    if (!red.enviarSolicitud("juan", "ana", "2026-10-16"))
+        cout << "Solicitud duplicada rechazada correctamente.\n";
+
+    cout << "\nSolicitudes registradas: "
+         << red.getCantidadSolicitudes() << "\n";
+
+    SolicitudAmistad* solicitud =
+        red.obtenerSolicitudPorIndice(0);
+
+    if (solicitud != nullptr)
     {
-        cout << "Contrasena incorrecta.\n";
+        cout << "Emisor: "
+             << solicitud->getEmisor()->getNombreUsuario() << "\n";
+
+        cout << "Receptor: "
+             << solicitud->getReceptor()->getNombreUsuario() << "\n";
+
+        cout << "Pendiente: "
+             << (solicitud->estaPendiente() ? "Si" : "No") << "\n";
     }
 
-    // Probar el constructor de copia
-    Usuario copia(usuario);
+    if (red.responderSolicitud(0, true))
+        cout << "\nSolicitud aceptada.\n";
 
-    cout << "\nUsuario copiado: "
-         << copia.getNombreUsuario() << '\n';
+    if (red.sonAmigos("juan", "ana"))
+        cout << "Juan y Ana ahora son amigos.\n";
 
-    cout << "Ciudad del usuario copiado: "
-         << copia.getCiudad() << '\n';
+    cout << "Total de amistades: "
+         << red.getCantidadAmistades() << "\n";
 
-    // Verificar que la copia es independiente
-    copia.setCiudad("Cali");
-
-    cout << "\nCiudad original: "
-         << usuario.getCiudad() << '\n';
-
-    cout << "Ciudad de la copia: "
-         << copia.getCiudad() << '\n';
-
-    // Verificar que RedSocial sigue funcionando
-    cout << "\nUsuarios en RedSocial: "
-         << red.getCantidadUsuarios() << '\n';
+    if (!red.enviarSolicitud("juan", "juan", "2026-10-16"))
+        cout << "No se permiten solicitudes a uno mismo.\n";
 
     return 0;
 }
