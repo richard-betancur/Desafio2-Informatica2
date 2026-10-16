@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(Desafio2-informatica2
     main.cpp
+    almacenamiento.h
+    almacenamiento.cpp
     usuario.h
     usuario.cpp
     redsocial.h
