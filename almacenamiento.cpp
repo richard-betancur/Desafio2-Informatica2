@@ -7,7 +7,7 @@
 
 bool Almacenamiento::guardarUsuarios(const RedSocial& red, const std::string& rutaArchivo)
 {
-    std::ofstream archivo(rutaArchivo);
+    ofstream archivo(rutaArchivo);
 
     if (!archivo.is_open())
         return false;
@@ -31,46 +31,43 @@ bool Almacenamiento::guardarUsuarios(const RedSocial& red, const std::string& ru
     return true;
 }
 
-bool Almacenamiento::cargarUsuarios(RedSocial& red,
-                                    const std::string& rutaArchivo)
+bool Almacenamiento::cargarUsuarios(RedSocial& red, const string& rutaArchivo)
 {
-    std::ifstream archivo(rutaArchivo);
+    ifstream archivo(rutaArchivo);
 
     if (!archivo.is_open())
         return false;
-
-    std::string linea;
+    string linea;
 
     while (std::getline(archivo, linea))
     {
         if (linea.empty())
             continue;
 
-        std::stringstream separador(linea);
+        stringstream separador(linea);
 
-        std::string nombre;
-        std::string nacimiento;
-        std::string correo;
-        std::string rutaFoto;
-        std::string contraseña;
-        std::string ciudad;
-        std::string pais;
-        std::string inscripcion;
+        string nombre;
+        string nacimiento;
+        string correo;
+        string rutaFoto;
+        string contraseña;
+        string ciudad;
+        string pais;
+        string inscripcion;
 
-        if (!std::getline(separador, nombre, ';') ||
-            !std::getline(separador, nacimiento, ';') ||
-            !std::getline(separador, correo, ';') ||
-            !std::getline(separador, rutaFoto, ';') ||
-            !std::getline(separador, contraseña, ';') ||
-            !std::getline(separador, ciudad, ';') ||
-            !std::getline(separador, pais, ';') ||
-            !std::getline(separador, inscripcion, ';'))
+        if (!getline(separador, nombre, ';') ||
+            !getline(separador, nacimiento, ';') ||
+            !getline(separador, correo, ';') ||
+            !getline(separador, rutaFoto, ';') ||
+            !getline(separador, contraseña, ';') ||
+            !getline(separador, ciudad, ';') ||
+            !getline(separador, pais, ';') ||
+            !getline(separador, inscripcion, ';'))
         {
             continue;
         }
 
-        red.agregarUsuario(nombre, nacimiento, correo, rutaFoto,
-                           contraseña, ciudad, pais, inscripcion);
+        red.agregarUsuario(nombre, nacimiento, correo, rutaFoto, contraseña, ciudad, pais, inscripcion);
     }
 
     archivo.close();

@@ -35,7 +35,7 @@ void RedSocial::ampliarCapacidad()
     capacidadUsuarios = nuevaCapacidad;
 }
 
-bool RedSocial::agregarUsuario(const std::string& nombre, const std::string& clave)
+bool RedSocial::agregarUsuario(const string& nombre, const string& clave)
 {
     if (buscarUsuario(nombre) != nullptr)
     {
@@ -53,7 +53,7 @@ bool RedSocial::agregarUsuario(const std::string& nombre, const std::string& cla
     return true;
 }
 
-Usuario* RedSocial::buscarUsuario(const std::string& nombre) const
+Usuario* RedSocial::buscarUsuario(const string& nombre) const
 {
     for (int i = 0; i < cantidadUsuarios; i++)
     {
@@ -79,14 +79,14 @@ Usuario* RedSocial::obtenerUsuarioPorIndice(int indice) const
     return usuarios[indice];
 }
 
-bool RedSocial::agregarUsuario(const std::string& nombre,
-                               const std::string& nacimiento,
-                               const std::string& correo,
-                               const std::string& rutaFoto,
-                               const std::string& clave,
-                               const std::string& ciudad,
-                               const std::string& pais,
-                               const std::string& inscripcion)
+bool RedSocial::agregarUsuario(const string& nombre,
+                               const string& nacimiento,
+                               const string& correo,
+                               const string& rutaFoto,
+                               const string& clave,
+                               const string& ciudad,
+                               const string& pais,
+                               const string& inscripcion)
 {
     // Evitar usuarios duplicados
     if (buscarUsuario(nombre) != nullptr)
