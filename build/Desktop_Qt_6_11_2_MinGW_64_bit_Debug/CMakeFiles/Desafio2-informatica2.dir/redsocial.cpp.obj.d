@@ -99,4 +99,50 @@ CMakeFiles/Desafio2-informatica2.dir/redsocial.cpp.obj: \
  C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/uses_allocator_args.h \
  C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/tuple \
  C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\usuario.h \
- C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\solicitudamistad.h
+ C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\solicitudamistad.h \
+ C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\mensaje.h \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/iostream \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ostream \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ios \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/exception \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/exception_ptr.h \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/cxxabi_init_exception.h \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/typeinfo \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/nested_exception.h \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/ios_base.h \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ext/atomicity.h \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/gthr.h \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/gthr-default.h \
+ C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/pthread.h \
+ C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/sys/types.h \
+ C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/process.h \
+ C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/corecrt_startup.h \
+ C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/signal.h \
+ C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/pthread_signal.h \
+ C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/time.h \
+ C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/sys/timeb.h \
+ C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/sec_api/sys/timeb_s.h \
+ C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/_timeval.h \
+ C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/pthread_time.h \
+ C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/pthread_compat.h \
+ C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/pthread_unistd.h \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/atomic_word.h \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/locale_classes.h \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/locale_classes.tcc \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/system_error \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/error_constants.h \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/stdexcept \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/streambuf \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/streambuf.tcc \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/basic_ios.h \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/locale_facets.h \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/cwctype \
+ C:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/wctype.h \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/ctype_base.h \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/streambuf_iterator.h \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/ctype_inline.h \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/locale_facets.tcc \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/basic_ios.tcc \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/ostream.tcc \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/istream \
+ C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/istream.tcc

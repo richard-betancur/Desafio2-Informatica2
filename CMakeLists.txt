@@ -10,6 +10,8 @@ add_executable(Desafio2-informatica2
     almacenamiento.h
     almacenamiento.cpp
     solicitudamistad.cpp
+    mensaje.cpp
+    mensaje.h
     solicitudamistad.h
     usuario.h
     usuario.cpp

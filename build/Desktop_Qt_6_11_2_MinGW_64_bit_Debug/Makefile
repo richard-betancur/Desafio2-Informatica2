@@ -221,6 +221,30 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Desafio2-informatica2.dir\build.make CMakeFiles/Desafio2-informatica2.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+mensaje.obj: mensaje.cpp.obj
+.PHONY : mensaje.obj
+
+# target to build an object file
+mensaje.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Desafio2-informatica2.dir\build.make CMakeFiles/Desafio2-informatica2.dir/mensaje.cpp.obj
+.PHONY : mensaje.cpp.obj
+
+mensaje.i: mensaje.cpp.i
+.PHONY : mensaje.i
+
+# target to preprocess a source file
+mensaje.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Desafio2-informatica2.dir\build.make CMakeFiles/Desafio2-informatica2.dir/mensaje.cpp.i
+.PHONY : mensaje.cpp.i
+
+mensaje.s: mensaje.cpp.s
+.PHONY : mensaje.s
+
+# target to generate assembly for a file
+mensaje.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Desafio2-informatica2.dir\build.make CMakeFiles/Desafio2-informatica2.dir/mensaje.cpp.s
+.PHONY : mensaje.cpp.s
+
 redsocial.obj: redsocial.cpp.obj
 .PHONY : redsocial.obj
 
@@ -312,6 +336,9 @@ help:
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s
+	@echo ... mensaje.obj
+	@echo ... mensaje.i
+	@echo ... mensaje.s
 	@echo ... redsocial.obj
 	@echo ... redsocial.i
 	@echo ... redsocial.s

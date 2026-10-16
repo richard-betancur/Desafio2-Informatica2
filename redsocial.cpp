@@ -1,4 +1,5 @@
 #include "redsocial.h"
+#include "iostream"
 
 RedSocial::RedSocial()
 {
@@ -14,6 +15,10 @@ RedSocial::RedSocial()
     cantidadAmistades = 0;
     amigosA = new Usuario*[capacidadAmistades];
     amigosB = new Usuario*[capacidadAmistades];
+
+    capacidadMensajes = 2;
+    cantidadMensajes = 0;
+    mensajes = new Mensaje*[capacidadMensajes];
 }
 
 RedSocial::~RedSocial()
@@ -22,6 +27,11 @@ RedSocial::~RedSocial()
         delete solicitudes[i];
 
     delete[] solicitudes;
+
+    for (int i = 0; i < cantidadMensajes; i++)
+        delete mensajes[i];
+
+    delete[] mensajes;
 
     for (int i = 0; i < cantidadUsuarios; i++)
         delete usuarios[i];
@@ -267,4 +277,129 @@ bool RedSocial::sonAmigos(const string& nombreA,
 int RedSocial::getCantidadAmistades() const
 {
     return cantidadAmistades;
+}
+
+void RedSocial::ampliarMensajes()
+{
+    int nuevaCapacidad = capacidadMensajes * 2;
+    Mensaje** nuevoArreglo = new Mensaje*[nuevaCapacidad];
+
+    for (int i = 0; i < cantidadMensajes; i++)
+        nuevoArreglo[i] = mensajes[i];
+
+    delete[] mensajes;
+    mensajes = nuevoArreglo;
+    capacidadMensajes = nuevaCapacidad;
+}
+
+bool RedSocial::enviarMensaje(
+    const string& nombreEmisor,
+    const string& nombreReceptor,
+    const string& contenido,
+    const string& fecha)
+{
+    Usuario* emisor = buscarUsuario(nombreEmisor);
+    Usuario* receptor = buscarUsuario(nombreReceptor);
+
+    if (emisor == nullptr || receptor == nullptr)
+        return false;
+
+    if (emisor == receptor)
+        return false;
+
+    if (contenido.empty() || contenido.length() > 512)
+        return false;
+
+    if (fecha.empty())
+        return false;
+
+    if (cantidadMensajes == capacidadMensajes)
+        ampliarMensajes();
+
+    mensajes[cantidadMensajes] =
+        new Mensaje(emisor, receptor, contenido, fecha);
+
+    if (!mensajes[cantidadMensajes]->esValido())
+    {
+        delete mensajes[cantidadMensajes];
+        return false;
+    }
+
+    cantidadMensajes++;
+    return true;
+}
+
+int RedSocial::getCantidadMensajes() const
+{
+    return cantidadMensajes;
+}
+
+Mensaje* RedSocial::obtenerMensajePorIndice(int indice) const
+{
+    if (indice < 0 || indice >= cantidadMensajes)
+        return nullptr;
+
+    return mensajes[indice];
+}
+
+int RedSocial::leerMensajesNoLeidos(
+    const string& nombreUsuario)
+{
+    Usuario* receptor = buscarUsuario(nombreUsuario);
+
+    if (receptor == nullptr)
+        return -1;
+
+    int encontrados = 0;
+
+    for (int i = 0; i < cantidadMensajes; i++)
+    {
+        if (mensajes[i]->getDestinatario() == receptor &&
+            !mensajes[i]->estaLeido())
+        {
+            cout << "De: " << mensajes[i]->getRemitente()->getNombreUsuario() << "\n";
+
+            cout << "Fecha: " << mensajes[i]->getFecha() << "\n";
+
+            cout << "Mensaje: " << mensajes[i]->getContenido() << "\n\n";
+
+            mensajes[i]->marcarLeido();
+            encontrados++;
+        }
+    }
+
+    return encontrados;
+}
+
+int RedSocial::buscarMensajesPorFecha(
+    const string& nombreUsuario,
+    const string& fechaInicio,
+    const string& fechaFin) const
+{
+    Usuario* receptor = buscarUsuario(nombreUsuario);
+
+    if (receptor == nullptr || fechaInicio > fechaFin)
+        return -1;
+
+    int encontrados = 0;
+
+    for (int i = 0; i < cantidadMensajes; i++)
+    {
+        Mensaje* mensaje = mensajes[i];
+
+        if (mensaje->getDestinatario() == receptor &&
+            mensaje->getFecha().substr(0, 10) >= fechaInicio &&
+            mensaje->getFecha().substr(0, 10) <= fechaFin)
+        {
+            cout << "De: " << mensaje->getRemitente()->getNombreUsuario() << "\n";
+
+            cout << "Fecha: " << mensaje->getFecha() << "\n";
+
+            cout << "Mensaje: " << mensaje->getContenido() << "\n\n";
+
+            encontrados++;
+        }
+    }
+
+    return encontrados;
 }

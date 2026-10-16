@@ -1,55 +1,66 @@
 #include <iostream>
-#include "redsocial.h"
+#include "usuario.h"
+#include "mensaje.h"
 
 using namespace std;
 
 int main()
 {
-    RedSocial red;
+    Usuario juan("juan", "clave1");
+    Usuario ana("ana", "clave2");
 
-    red.agregarUsuario("juan", "clave1");
-    red.agregarUsuario("ana", "clave2");
-    red.agregarUsuario("pedro", "clave3");
+    Mensaje mensaje(
+        &juan,
+        &ana,
+        "Hola Ana, como estas?",
+        "2026-10-16 10:30"
+        );
 
-    cout << "=== PRUEBA DE SOLICITUDES ===\n\n";
+    cout << "=== PRUEBA DE MENSAJES ===\n\n";
 
-    if (red.enviarSolicitud("juan", "ana", "2026-10-16"))
-        cout << "Solicitud de Juan a Ana enviada.\n";
-    else
-        cout << "No se pudo enviar la solicitud.\n";
+    cout << "Remitente: "
+         << mensaje.getRemitente()->getNombreUsuario() << "\n";
 
-    if (!red.enviarSolicitud("juan", "ana", "2026-10-16"))
-        cout << "Solicitud duplicada rechazada correctamente.\n";
+    cout << "Destinatario: "
+         << mensaje.getDestinatario()->getNombreUsuario() << "\n";
 
-    cout << "\nSolicitudes registradas: "
-         << red.getCantidadSolicitudes() << "\n";
+    cout << "Contenido: "
+         << mensaje.getContenido() << "\n";
 
-    SolicitudAmistad* solicitud =
-        red.obtenerSolicitudPorIndice(0);
+    cout << "Fecha: "
+         << mensaje.getFecha() << "\n";
 
-    if (solicitud != nullptr)
-    {
-        cout << "Emisor: "
-             << solicitud->getEmisor()->getNombreUsuario() << "\n";
+    cout << "Longitud: "
+         << mensaje.getContenido().length()
+         << " caracteres\n";
 
-        cout << "Receptor: "
-             << solicitud->getReceptor()->getNombreUsuario() << "\n";
+    cout << "Mensaje valido: "
+         << (mensaje.esValido() ? "Si" : "No") << "\n";
 
-        cout << "Pendiente: "
-             << (solicitud->estaPendiente() ? "Si" : "No") << "\n";
-    }
+    cout << "Leido inicialmente: "
+         << (mensaje.estaLeido() ? "Si" : "No") << "\n";
 
-    if (red.responderSolicitud(0, true))
-        cout << "\nSolicitud aceptada.\n";
+    mensaje.marcarLeido();
 
-    if (red.sonAmigos("juan", "ana"))
-        cout << "Juan y Ana ahora son amigos.\n";
+    cout << "Leido despues de marcarlo: "
+         << (mensaje.estaLeido() ? "Si" : "No") << "\n";
 
-    cout << "Total de amistades: "
-         << red.getCantidadAmistades() << "\n";
+    Mensaje copia(mensaje);
 
-    if (!red.enviarSolicitud("juan", "juan", "2026-10-16"))
-        cout << "No se permiten solicitudes a uno mismo.\n";
+    cout << "Contenido de la copia: "
+         << copia.getContenido() << "\n";
+
+    string textoLargo(513, 'A');
+
+    Mensaje mensajeLargo(
+        &juan,
+        &ana,
+        textoLargo,
+        "2026-10-16 10:31"
+        );
+
+    cout << "Mensaje de 513 caracteres valido: "
+         << (mensajeLargo.esValido() ? "Si" : "No") << "\n";
 
     return 0;
 }

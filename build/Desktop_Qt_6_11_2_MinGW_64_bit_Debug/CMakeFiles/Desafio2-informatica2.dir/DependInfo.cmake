@@ -10,6 +10,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "C:/Users/user/OneDrive/Documentos/Desafio2-informatica2/almacenamiento.cpp" "CMakeFiles/Desafio2-informatica2.dir/almacenamiento.cpp.obj" "gcc" "CMakeFiles/Desafio2-informatica2.dir/almacenamiento.cpp.obj.d"
   "C:/Users/user/OneDrive/Documentos/Desafio2-informatica2/main.cpp" "CMakeFiles/Desafio2-informatica2.dir/main.cpp.obj" "gcc" "CMakeFiles/Desafio2-informatica2.dir/main.cpp.obj.d"
+  "C:/Users/user/OneDrive/Documentos/Desafio2-informatica2/mensaje.cpp" "CMakeFiles/Desafio2-informatica2.dir/mensaje.cpp.obj" "gcc" "CMakeFiles/Desafio2-informatica2.dir/mensaje.cpp.obj.d"
   "C:/Users/user/OneDrive/Documentos/Desafio2-informatica2/redsocial.cpp" "CMakeFiles/Desafio2-informatica2.dir/redsocial.cpp.obj" "gcc" "CMakeFiles/Desafio2-informatica2.dir/redsocial.cpp.obj.d"
   "C:/Users/user/OneDrive/Documentos/Desafio2-informatica2/solicitudamistad.cpp" "CMakeFiles/Desafio2-informatica2.dir/solicitudamistad.cpp.obj" "gcc" "CMakeFiles/Desafio2-informatica2.dir/solicitudamistad.cpp.obj.d"
   "C:/Users/user/OneDrive/Documentos/Desafio2-informatica2/usuario.cpp" "CMakeFiles/Desafio2-informatica2.dir/usuario.cpp.obj" "gcc" "CMakeFiles/Desafio2-informatica2.dir/usuario.cpp.obj.d"

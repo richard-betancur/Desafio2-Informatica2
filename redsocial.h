@@ -4,6 +4,7 @@
 #include <string>
 #include "usuario.h"
 #include "solicitudamistad.h"
+#include "mensaje.h"
 
 class RedSocial
 {
@@ -27,6 +28,13 @@ private:
     void ampliarCapacidad();
     void ampliarSolicitudes();
     void ampliarAmistades();
+
+    // Mensajes
+    Mensaje** mensajes;
+    int cantidadMensajes;
+    int capacidadMensajes;
+
+    void ampliarMensajes();
 
 public:
     RedSocial();
@@ -52,6 +60,12 @@ public:
     Usuario* obtenerUsuarioPorIndice(int indice) const;
     int getCantidadUsuarios() const;
 
+
+
+
+
+
+
     // Solicitudes
     bool enviarSolicitud(const string& nombreEmisor, const string& nombreReceptor, const string& fecha);
 
@@ -61,10 +75,39 @@ public:
 
     bool responderSolicitud(int indice, bool aceptar);
 
+
+
+
+
+
+
     // Amistades
     bool sonAmigos(const string& nombreA, const string& nombreB) const;
 
     int getCantidadAmistades() const;
+
+
+
+
+
+
+
+
+    // Operaciones con mensajes
+    bool enviarMensaje(const std::string& nombreEmisor,
+                       const std::string& nombreReceptor,
+                       const std::string& contenido,
+                       const std::string& fecha);
+
+    int getCantidadMensajes() const;
+
+    Mensaje* obtenerMensajePorIndice(int indice) const;
+
+    int leerMensajesNoLeidos(const std::string& nombreUsuario);
+
+    int buscarMensajesPorFecha(const std::string& nombreUsuario,
+                               const std::string& fechaInicio,
+                               const std::string& fechaFin) const;
 };
 
 #endif
