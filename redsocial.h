@@ -19,9 +19,18 @@ public:
     RedSocial(const RedSocial&) = delete;
     RedSocial& operator=(const RedSocial&) = delete;
 
-    bool agregarUsuario(const std::string& nombre, const std::string& clave);
+    bool agregarUsuario(const string& nombre, const string& clave);
+    bool agregarUsuario(const string& nombre,
+                        const string& nacimiento,
+                        const string& correo,
+                        const string& rutaFoto,
+                        const string& clave,
+                        const string& ciudad,
+                        const string& pais,
+                        const string& inscripcion);
 
-    Usuario* buscarUsuario(const std::string& nombre) const;
+    Usuario* buscarUsuario(const string& nombre) const;
+    Usuario* obtenerUsuarioPorIndice(int indice) const;
 
     int getCantidadUsuarios() const;
 };

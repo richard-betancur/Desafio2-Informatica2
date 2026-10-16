@@ -70,3 +70,45 @@ int RedSocial::getCantidadUsuarios() const
 {
     return cantidadUsuarios;
 }
+
+Usuario* RedSocial::obtenerUsuarioPorIndice(int indice) const
+{
+    if (indice < 0 || indice >= cantidadUsuarios)
+        return nullptr;
+
+    return usuarios[indice];
+}
+
+bool RedSocial::agregarUsuario(const std::string& nombre,
+                               const std::string& nacimiento,
+                               const std::string& correo,
+                               const std::string& rutaFoto,
+                               const std::string& clave,
+                               const std::string& ciudad,
+                               const std::string& pais,
+                               const std::string& inscripcion)
+{
+    // Evitar usuarios duplicados
+    if (buscarUsuario(nombre) != nullptr)
+        return false;
+
+    // Ampliar el arreglo si está lleno
+    if (cantidadUsuarios == capacidadUsuarios)
+        ampliarCapacidad();
+
+    // Crear el usuario con todos sus datos
+    usuarios[cantidadUsuarios] = new Usuario(
+        nombre,
+        nacimiento,
+        correo,
+        rutaFoto,
+        clave,
+        ciudad,
+        pais,
+        inscripcion
+        );
+
+    cantidadUsuarios++;
+
+    return true;
+}

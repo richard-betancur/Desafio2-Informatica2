@@ -42,7 +42,7 @@ int main()
          << usuario.getCiudad() << '\n';
 
     // Probar la verificacion de contrasena
-    if (usuario.verificarContrasena("clave789"))
+    if (usuario.verificarContraseña("clave789"))
     {
         cout << "Contrasena correcta.\n";
     }

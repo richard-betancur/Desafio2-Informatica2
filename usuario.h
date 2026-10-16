@@ -12,7 +12,7 @@ private:
     string fechaNacimiento;
     string correo;
     string rutaFotoPerfil;
-    string contrasena;
+    string contraseña;
     string ciudad;
     string pais;
     string fechaInscripcion;
@@ -39,18 +39,19 @@ public:
     string getFechaNacimiento() const;
     string getCorreo() const;
     string getRutaFotoPerfil() const;
+    string getContraseña() const;
     string getCiudad() const;
     string getPais() const;
     string getFechaInscripcion() const;
 
     // Verificación de credenciales
-    bool verificarContrasena(const string& clave) const;
+    bool verificarContraseña(const string& clave) const;
 
     // Setters
     void setFechaNacimiento(const string& fecha);
     void setCorreo(const string& email);
     void setRutaFotoPerfil(const string& ruta);
-    void setContrasena(const string& clave);
+    void setContraseña(const string& clave);
     void setCiudad(const string& ciudadUsuario);
     void setPais(const string& paisUsuario);
     void setFechaInscripcion(const string& fecha);

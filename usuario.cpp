@@ -9,7 +9,7 @@ Usuario::Usuario()
     fechaNacimiento = "";
     correo = "";
     rutaFotoPerfil = "";
-    contrasena = "";
+    contraseña = "";
     ciudad = "";
     pais = "";
     fechaInscripcion = "";
@@ -19,7 +19,7 @@ Usuario::Usuario()
 Usuario::Usuario(const string& nombre, const string& clave)
 {
     nombreUsuario = nombre;
-    contrasena = clave;
+    contraseña = clave;
 
     fechaNacimiento = "";
     correo = "";
@@ -43,7 +43,7 @@ Usuario::Usuario(const string& nombre,
     fechaNacimiento = nacimiento;
     correo = email;
     rutaFotoPerfil = rutaPerfil;
-    contrasena = clave;
+    contraseña = clave;
     ciudad = ciudadUsuario;
     pais = paisUsuario;
     fechaInscripcion = inscripcion;
@@ -56,7 +56,7 @@ Usuario::Usuario(const Usuario& otro)
     fechaNacimiento = otro.fechaNacimiento;
     correo = otro.correo;
     rutaFotoPerfil = otro.rutaFotoPerfil;
-    contrasena = otro.contrasena;
+    contraseña = otro.contraseña;
     ciudad = otro.ciudad;
     pais = otro.pais;
     fechaInscripcion = otro.fechaInscripcion;
@@ -98,10 +98,15 @@ string Usuario::getFechaInscripcion() const
     return fechaInscripcion;
 }
 
-// Verificación de contraseña
-bool Usuario::verificarContrasena(const string& clave) const
+string Usuario::getContraseña() const
 {
-    return contrasena == clave;
+    return contraseña;
+}
+
+// Verificación de contraseña
+bool Usuario::verificarContraseña(const string& clave) const
+{
+    return contraseña == clave;
 }
 
 // Setters
@@ -120,9 +125,9 @@ void Usuario::setRutaFotoPerfil(const string& ruta)
     rutaFotoPerfil = ruta;
 }
 
-void Usuario::setContrasena(const string& clave)
+void Usuario::setContraseña(const string& clave)
 {
-    contrasena = clave;
+    contraseña = clave;
 }
 
 void Usuario::setCiudad(const string& ciudadUsuario)
