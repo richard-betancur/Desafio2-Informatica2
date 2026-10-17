@@ -1,9 +1,12 @@
+
 #ifndef USUARIO_H
 #define USUARIO_H
 
 #include <string>
 
 using namespace std;
+
+class Album;
 
 class Usuario
 {
@@ -16,6 +19,13 @@ private:
     string ciudad;
     string pais;
     string fechaInscripcion;
+
+    // Arreglo dinamico de albumes del usuario
+    Album** albumes;
+    int cantidadAlbumes;
+    int capacidadAlbumes;
+
+    void ampliarCapacidadAlbumes();
 
 public:
     // Constructores
@@ -34,6 +44,12 @@ public:
 
     Usuario(const Usuario& otro);
 
+    // Destructor
+    ~Usuario();
+
+    // Operador de asignacion
+    Usuario& operator=(const Usuario& otro);
+
     // Getters
     string getNombreUsuario() const;
     string getFechaNacimiento() const;
@@ -44,7 +60,7 @@ public:
     string getPais() const;
     string getFechaInscripcion() const;
 
-    // Verificación de credenciales
+    // Verificacion de credenciales
     bool verificarContraseña(const string& clave) const;
 
     // Setters
@@ -55,6 +71,11 @@ public:
     void setCiudad(const string& ciudadUsuario);
     void setPais(const string& paisUsuario);
     void setFechaInscripcion(const string& fecha);
+
+    // Gestion de albumes
+    bool agregarAlbum(const Album& album);
+    int getCantidadAlbumes() const;
+    Album* obtenerAlbumPorIndice(int indice) const;
 };
 
 #endif
