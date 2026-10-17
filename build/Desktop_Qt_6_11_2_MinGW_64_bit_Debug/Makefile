@@ -173,6 +173,30 @@ Desafio2-informatica2/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Desafio2-informatica2.dir\build.make CMakeFiles/Desafio2-informatica2.dir/build
 .PHONY : Desafio2-informatica2/fast
 
+album.obj: album.cpp.obj
+.PHONY : album.obj
+
+# target to build an object file
+album.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Desafio2-informatica2.dir\build.make CMakeFiles/Desafio2-informatica2.dir/album.cpp.obj
+.PHONY : album.cpp.obj
+
+album.i: album.cpp.i
+.PHONY : album.i
+
+# target to preprocess a source file
+album.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Desafio2-informatica2.dir\build.make CMakeFiles/Desafio2-informatica2.dir/album.cpp.i
+.PHONY : album.cpp.i
+
+album.s: album.cpp.s
+.PHONY : album.s
+
+# target to generate assembly for a file
+album.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Desafio2-informatica2.dir\build.make CMakeFiles/Desafio2-informatica2.dir/album.cpp.s
+.PHONY : album.cpp.s
+
 almacenamiento.obj: almacenamiento.cpp.obj
 .PHONY : almacenamiento.obj
 
@@ -354,6 +378,9 @@ help:
 	@echo ... list_install_components
 	@echo ... rebuild_cache
 	@echo ... Desafio2-informatica2
+	@echo ... album.obj
+	@echo ... album.i
+	@echo ... album.s
 	@echo ... almacenamiento.obj
 	@echo ... almacenamiento.i
 	@echo ... almacenamiento.s

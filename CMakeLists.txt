@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(Desafio2-informatica2
     main.cpp
+    album.cpp
+    album.h
     almacenamiento.h
     almacenamiento.cpp
     solicitudamistad.cpp

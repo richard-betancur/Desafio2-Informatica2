@@ -37,7 +37,7 @@
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 23,
+				"line" : 27,
 				"parent" : 0
 			},
 			{
@@ -86,11 +86,13 @@
 			"sourceIndexes" : 
 			[
 				0,
-				2,
-				3,
+				1,
 				4,
-				8,
-				10
+				5,
+				6,
+				10,
+				11,
+				14
 			]
 		}
 	],
@@ -142,22 +144,26 @@
 			"sourceIndexes" : 
 			[
 				0,
-				2,
-				3,
+				1,
 				4,
-				8,
-				10
+				5,
+				6,
+				10,
+				11,
+				14
 			]
 		},
 		{
 			"name" : "Header Files",
 			"sourceIndexes" : 
 			[
-				1,
-				5,
-				6,
+				2,
+				3,
 				7,
-				9
+				8,
+				9,
+				12,
+				13
 			]
 		}
 	],
@@ -168,6 +174,17 @@
 			"compileGroupIndex" : 0,
 			"path" : "main.cpp",
 			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "album.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "album.h",
+			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
@@ -212,6 +229,17 @@
 			"compileGroupIndex" : 0,
 			"path" : "usuario.cpp",
 			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "foto.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "foto.h",
+			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
