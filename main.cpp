@@ -1,60 +1,62 @@
+
 #include <iostream>
-#include "redsocial.h"
+#include "foto.h"
 
 using namespace std;
 
 int main()
 {
-    RedSocial red;
+    cout << "===== PRUEBA DE LA CLASE FOTO =====\n\n";
 
-    red.agregarUsuario("juan", "clave1");
-    red.agregarUsuario("ana", "clave2");
-    red.agregarUsuario("pedro", "clave3");
+    // Crear una foto de prueba
+    Foto foto1("2026-10-15", 2500000,
+               "fotos/foto1.jpg", 3);
 
-    cout << "=== PRUEBA DE MENSAJES ===\n\n";
+    cout << "Fecha: " << foto1.getFechaCaptura() << endl;
+    cout << "Ruta: " << foto1.getRuta() << endl;
+    cout << "Tamano: " << foto1.getTamanoBytes()
+         << " bytes" << endl;
+    cout << "Likes iniciales: "
+         << foto1.getCantidadLikes() << endl;
 
-    red.enviarMensaje(
-        "juan", "ana",
-        "Mensaje del segundo dia",
-        "2026-10-16 14:00"
-        );
+    // Dar un like
+    cout << "\nDando un like..." << endl;
+    foto1.darLike();
 
-    red.enviarMensaje(
-        "pedro", "ana",
-        "Mensaje del primer dia",
-        "2026-10-15 09:00"
-        );
+    cout << "Likes actuales: "
+         << foto1.getCantidadLikes() << endl;
 
-    red.enviarMensaje(
-        "juan", "ana",
-        "Mensaje de la manana",
-        "2026-10-16 08:00"
-        );
+    // Quitar un like
+    cout << "\nQuitando un like..." << endl;
+    foto1.quitarLike();
 
-    cout << "Mensajes recibidos por Ana:\n\n";
+    cout << "Likes actuales: "
+         << foto1.getCantidadLikes() << endl;
 
-    int cantidad =
-        red.mostrarMensajesRecibidosOrdenados("ana");
+    // Probar el constructor de copia
+    Foto foto2(foto1);
 
-    cout << "Total recibidos: " << cantidad << "\n\n";
+    cout << "\nLikes de la copia: "
+         << foto2.getCantidadLikes() << endl;
 
-    cout << "=== MENSAJES NO LEIDOS ===\n\n";
+    // Probar la validacion
+    cout << "\nFoto valida: "
+         << (foto1.esValida() ? "Si" : "No") << endl;
 
-    int noLeidos = red.leerMensajesNoLeidos("ana");
+    // Intentar quitar likes cuando no quedan
+    Foto foto3("2026-10-16", 100000,
+               "fotos/foto3.jpg", 0);
 
-    cout << "Mensajes marcados como leidos: "
-         << noLeidos << "\n\n";
+    cout << "\nIntentando quitar un like de una foto sin likes..."
+         << endl;
 
-    cout << "=== BUSQUEDA POR FECHAS ===\n\n";
+    if (foto3.quitarLike())
+        cout << "Like eliminado." << endl;
+    else
+        cout << "No se puede quitar: la foto ya tiene cero likes."
+             << endl;
 
-    int encontrados = red.buscarMensajesPorFecha(
-        "ana",
-        "2026-10-16",
-        "2026-10-16"
-        );
-
-    cout << "Mensajes encontrados ese dia: "
-         << encontrados << "\n";
+    cout << "\n===== FIN DE LA PRUEBA =====\n";
 
     return 0;
 }

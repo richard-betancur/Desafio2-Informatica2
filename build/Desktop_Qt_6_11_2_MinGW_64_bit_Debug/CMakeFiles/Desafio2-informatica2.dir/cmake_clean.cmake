@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/Desafio2-informatica2.dir/almacenamiento.cpp.obj"
   "CMakeFiles/Desafio2-informatica2.dir/almacenamiento.cpp.obj.d"
+  "CMakeFiles/Desafio2-informatica2.dir/foto.cpp.obj"
+  "CMakeFiles/Desafio2-informatica2.dir/foto.cpp.obj.d"
   "CMakeFiles/Desafio2-informatica2.dir/main.cpp.obj"
   "CMakeFiles/Desafio2-informatica2.dir/main.cpp.obj.d"
   "CMakeFiles/Desafio2-informatica2.dir/mensaje.cpp.obj"

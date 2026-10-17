@@ -197,6 +197,30 @@ almacenamiento.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Desafio2-informatica2.dir\build.make CMakeFiles/Desafio2-informatica2.dir/almacenamiento.cpp.s
 .PHONY : almacenamiento.cpp.s
 
+foto.obj: foto.cpp.obj
+.PHONY : foto.obj
+
+# target to build an object file
+foto.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Desafio2-informatica2.dir\build.make CMakeFiles/Desafio2-informatica2.dir/foto.cpp.obj
+.PHONY : foto.cpp.obj
+
+foto.i: foto.cpp.i
+.PHONY : foto.i
+
+# target to preprocess a source file
+foto.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Desafio2-informatica2.dir\build.make CMakeFiles/Desafio2-informatica2.dir/foto.cpp.i
+.PHONY : foto.cpp.i
+
+foto.s: foto.cpp.s
+.PHONY : foto.s
+
+# target to generate assembly for a file
+foto.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Desafio2-informatica2.dir\build.make CMakeFiles/Desafio2-informatica2.dir/foto.cpp.s
+.PHONY : foto.cpp.s
+
 main.obj: main.cpp.obj
 .PHONY : main.obj
 
@@ -333,6 +357,9 @@ help:
 	@echo ... almacenamiento.obj
 	@echo ... almacenamiento.i
 	@echo ... almacenamiento.s
+	@echo ... foto.obj
+	@echo ... foto.i
+	@echo ... foto.s
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s

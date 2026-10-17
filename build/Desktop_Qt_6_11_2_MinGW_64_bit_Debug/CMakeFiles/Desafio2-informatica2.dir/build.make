@@ -138,10 +138,24 @@ CMakeFiles/Desafio2-informatica2.dir/usuario.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/Desafio2-informatica2.dir/usuario.cpp.s"
 	C:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\usuario.cpp -o CMakeFiles\Desafio2-informatica2.dir\usuario.cpp.s
 
+CMakeFiles/Desafio2-informatica2.dir/foto.cpp.obj: CMakeFiles/Desafio2-informatica2.dir/flags.make
+CMakeFiles/Desafio2-informatica2.dir/foto.cpp.obj: C:/Users/user/OneDrive/Documentos/Desafio2-informatica2/foto.cpp
+CMakeFiles/Desafio2-informatica2.dir/foto.cpp.obj: CMakeFiles/Desafio2-informatica2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\build\Desktop_Qt_6_11_2_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/Desafio2-informatica2.dir/foto.cpp.obj"
+	C:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Desafio2-informatica2.dir/foto.cpp.obj -MF CMakeFiles\Desafio2-informatica2.dir\foto.cpp.obj.d -o CMakeFiles\Desafio2-informatica2.dir\foto.cpp.obj -c C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\foto.cpp
+
+CMakeFiles/Desafio2-informatica2.dir/foto.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/Desafio2-informatica2.dir/foto.cpp.i"
+	C:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\foto.cpp > CMakeFiles\Desafio2-informatica2.dir\foto.cpp.i
+
+CMakeFiles/Desafio2-informatica2.dir/foto.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/Desafio2-informatica2.dir/foto.cpp.s"
+	C:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\foto.cpp -o CMakeFiles\Desafio2-informatica2.dir\foto.cpp.s
+
 CMakeFiles/Desafio2-informatica2.dir/redsocial.cpp.obj: CMakeFiles/Desafio2-informatica2.dir/flags.make
 CMakeFiles/Desafio2-informatica2.dir/redsocial.cpp.obj: C:/Users/user/OneDrive/Documentos/Desafio2-informatica2/redsocial.cpp
 CMakeFiles/Desafio2-informatica2.dir/redsocial.cpp.obj: CMakeFiles/Desafio2-informatica2.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\build\Desktop_Qt_6_11_2_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/Desafio2-informatica2.dir/redsocial.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\build\Desktop_Qt_6_11_2_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/Desafio2-informatica2.dir/redsocial.cpp.obj"
 	C:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Desafio2-informatica2.dir/redsocial.cpp.obj -MF CMakeFiles\Desafio2-informatica2.dir\redsocial.cpp.obj.d -o CMakeFiles\Desafio2-informatica2.dir\redsocial.cpp.obj -c C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\redsocial.cpp
 
 CMakeFiles/Desafio2-informatica2.dir/redsocial.cpp.i: cmake_force
@@ -159,6 +173,7 @@ Desafio2__informatica2_OBJECTS = \
 "CMakeFiles/Desafio2-informatica2.dir/solicitudamistad.cpp.obj" \
 "CMakeFiles/Desafio2-informatica2.dir/mensaje.cpp.obj" \
 "CMakeFiles/Desafio2-informatica2.dir/usuario.cpp.obj" \
+"CMakeFiles/Desafio2-informatica2.dir/foto.cpp.obj" \
 "CMakeFiles/Desafio2-informatica2.dir/redsocial.cpp.obj"
 
 # External object files for target Desafio2-informatica2
@@ -169,12 +184,13 @@ Desafio2-informatica2.exe: CMakeFiles/Desafio2-informatica2.dir/almacenamiento.c
 Desafio2-informatica2.exe: CMakeFiles/Desafio2-informatica2.dir/solicitudamistad.cpp.obj
 Desafio2-informatica2.exe: CMakeFiles/Desafio2-informatica2.dir/mensaje.cpp.obj
 Desafio2-informatica2.exe: CMakeFiles/Desafio2-informatica2.dir/usuario.cpp.obj
+Desafio2-informatica2.exe: CMakeFiles/Desafio2-informatica2.dir/foto.cpp.obj
 Desafio2-informatica2.exe: CMakeFiles/Desafio2-informatica2.dir/redsocial.cpp.obj
 Desafio2-informatica2.exe: CMakeFiles/Desafio2-informatica2.dir/build.make
 Desafio2-informatica2.exe: CMakeFiles/Desafio2-informatica2.dir/linkLibs.rsp
 Desafio2-informatica2.exe: CMakeFiles/Desafio2-informatica2.dir/objects1.rsp
 Desafio2-informatica2.exe: CMakeFiles/Desafio2-informatica2.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\build\Desktop_Qt_6_11_2_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable Desafio2-informatica2.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\build\Desktop_Qt_6_11_2_MinGW_64_bit_Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable Desafio2-informatica2.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\Desafio2-informatica2.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

@@ -37,7 +37,7 @@
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 21,
+				"line" : 25,
 				"parent" : 0
 			},
 			{
@@ -88,8 +88,10 @@
 				0,
 				2,
 				3,
-				6,
-				8
+				4,
+				8,
+				9,
+				12
 			]
 		}
 	],
@@ -143,8 +145,10 @@
 				0,
 				2,
 				3,
-				6,
-				8
+				4,
+				8,
+				9,
+				12
 			]
 		},
 		{
@@ -152,9 +156,11 @@
 			"sourceIndexes" : 
 			[
 				1,
-				4,
 				5,
-				7
+				6,
+				7,
+				10,
+				11
 			]
 		}
 	],
@@ -185,6 +191,17 @@
 		},
 		{
 			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "mensaje.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "mensaje.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
 			"path" : "solicitudamistad.h",
 			"sourceGroupIndex" : 1
 		},
@@ -198,6 +215,17 @@
 			"compileGroupIndex" : 0,
 			"path" : "usuario.cpp",
 			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "foto.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "foto.h",
+			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,

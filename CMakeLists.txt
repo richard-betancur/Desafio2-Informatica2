@@ -15,6 +15,8 @@ add_executable(Desafio2-informatica2
     solicitudamistad.h
     usuario.h
     usuario.cpp
+    foto.cpp
+    foto.h
     redsocial.h
     redsocial.cpp
     )
