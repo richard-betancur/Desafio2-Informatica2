@@ -1,6 +1,14 @@
 #include <iostream>
-#include "redsocial.h"
+#include <string>
+#include <cstdlib>
+#include <ctime>
 
+#include "redsocial.h"
+#include "album.h"
+#include "foto.h"
+
+
+using namespace std;
 
 RedSocial::RedSocial()
 {
@@ -302,31 +310,44 @@ bool RedSocial::enviarMensaje(
     Usuario* emisor = buscarUsuario(nombreEmisor);
     Usuario* receptor = buscarUsuario(nombreReceptor);
 
+    // Ambos usuarios deben existir.
     if (emisor == nullptr || receptor == nullptr)
         return false;
 
+    // Un usuario no puede enviarse mensajes a sí mismo.
     if (emisor == receptor)
         return false;
 
+    // Solo se permiten mensajes entre amigos.
+    if (!sonAmigos(nombreEmisor, nombreReceptor))
+        return false;
+
+    // El mensaje debe tener contenido y máximo 512 caracteres.
     if (contenido.empty() || contenido.length() > 512)
         return false;
 
+    // La fecha es obligatoria.
     if (fecha.empty())
         return false;
 
+    // Ampliar el arreglo si no queda espacio.
     if (cantidadMensajes == capacidadMensajes)
         ampliarMensajes();
 
-    mensajes[cantidadMensajes] =
+    // Crear el mensaje dinámicamente.
+    Mensaje* nuevoMensaje =
         new Mensaje(emisor, receptor, contenido, fecha);
 
-    if (!mensajes[cantidadMensajes]->esValido())
+    // Validar antes de guardarlo.
+    if (!nuevoMensaje->esValido())
     {
-        delete mensajes[cantidadMensajes];
+        delete nuevoMensaje;
         return false;
     }
 
+    mensajes[cantidadMensajes] = nuevoMensaje;
     cantidadMensajes++;
+
     return true;
 }
 
@@ -406,7 +427,7 @@ int RedSocial::buscarMensajesPorFecha(
 }
 
 int RedSocial::mostrarMensajesRecibidosOrdenados(
-    const std::string& nombreUsuario) const
+    const string& nombreUsuario) const
 {
     Usuario* receptor = buscarUsuario(nombreUsuario);
 
@@ -455,4 +476,521 @@ int RedSocial::mostrarMensajesRecibidosOrdenados(
     delete[] recibidos;
 
     return cantidadRecibidos;
+}
+
+
+int RedSocial::mostrarAlbumesVisibles(
+    const string& nombreVisitante,
+    const string& nombrePropietario) const
+{
+    Usuario* visitante = buscarUsuario(nombreVisitante);
+    Usuario* propietario = buscarUsuario(nombrePropietario);
+
+    if (visitante == nullptr || propietario == nullptr)
+        return -1;
+
+    bool amistad = sonAmigos(nombreVisitante, nombrePropietario);
+    int encontrados = 0;
+
+    cout << "\nAlbumes de " << nombrePropietario << ":\n\n";
+
+    for (int i = 0; i < propietario->getCantidadAlbumes(); i++)
+    {
+        Album* album = propietario->obtenerAlbumPorIndice(i);
+
+        if (album != nullptr &&
+            album->puedeVerlo(visitante, propietario, amistad))
+        {
+            cout << encontrados << ". " << album->getNombre() << " | Fotos: " << album->getCantidadFotos() << '\n';
+
+            encontrados++;
+        }
+    }
+
+    if (encontrados == 0)
+        cout << "No hay albumes visibles.\n";
+
+    return encontrados;
+}
+
+
+Album* RedSocial::obtenerAlbumVisible(
+    const string& nombreVisitante,
+    const string& nombrePropietario,
+    int indiceAlbumVisible) const
+{
+    if (indiceAlbumVisible < 0)
+        return nullptr;
+
+    Usuario* visitante = buscarUsuario(nombreVisitante);
+    Usuario* propietario = buscarUsuario(nombrePropietario);
+
+    if (visitante == nullptr || propietario == nullptr)
+        return nullptr;
+
+    bool amistad = sonAmigos(nombreVisitante, nombrePropietario);
+    int indiceVisible = 0;
+
+    for (int i = 0; i < propietario->getCantidadAlbumes(); i++)
+    {
+        Album* album = propietario->obtenerAlbumPorIndice(i);
+
+        if (album != nullptr &&
+            album->puedeVerlo(visitante, propietario, amistad))
+        {
+            if (indiceVisible == indiceAlbumVisible)
+                return album;
+
+            indiceVisible++;
+        }
+    }
+
+    return nullptr;
+}
+
+
+bool RedSocial::darLikeFoto(
+    const string& nombreVisitante,
+    const string& nombrePropietario,
+    int indiceAlbumVisible,
+    int indiceFoto)
+{
+    Album* album = obtenerAlbumVisible(
+        nombreVisitante,
+        nombrePropietario,
+        indiceAlbumVisible);
+
+    if (album == nullptr)
+        return false;
+
+    Foto* foto = album->obtenerFotoPorIndice(indiceFoto);
+
+    if (foto == nullptr)
+        return false;
+
+    return foto->darLike();
+}
+
+
+bool RedSocial::quitarLikeFoto(
+    const string& nombreVisitante,
+    const string& nombrePropietario,
+    int indiceAlbumVisible,
+    int indiceFoto)
+{
+    Album* album = obtenerAlbumVisible(
+        nombreVisitante,
+        nombrePropietario,
+        indiceAlbumVisible);
+
+    if (album == nullptr)
+        return false;
+
+    Foto* foto = album->obtenerFotoPorIndice(indiceFoto);
+
+    if (foto == nullptr)
+        return false;
+
+    return foto->quitarLike();
+}
+
+int RedSocial::contarAmigosEnComun(
+    const string& nombreUsuario1,
+    const string& nombreUsuario2) const
+{
+    Usuario* usuario1 = buscarUsuario(nombreUsuario1);
+    Usuario* usuario2 = buscarUsuario(nombreUsuario2);
+
+    if (usuario1 == nullptr || usuario2 == nullptr)
+        return -1;
+
+    int comunes = 0;
+
+    for (int i = 0; i < cantidadAmistades; i++)
+    {
+        Usuario* posibleAmigo = nullptr;
+
+        // Buscar un extremo de la amistad que corresponda
+        // al primer usuario.
+        if (amigosA[i] == usuario1)
+            posibleAmigo = amigosB[i];
+        else if (amigosB[i] == usuario1)
+            posibleAmigo = amigosA[i];
+
+        if (posibleAmigo != nullptr)
+        {
+            // Verificar si ese amigo también es amigo del segundo.
+            for (int j = 0; j < cantidadAmistades; j++)
+            {
+                if ((amigosA[j] == usuario2 &&
+                     amigosB[j] == posibleAmigo) ||
+                    (amigosB[j] == usuario2 &&
+                     amigosA[j] == posibleAmigo))
+                {
+                    comunes++;
+                    break;
+                }
+            }
+        }
+    }
+
+    return comunes;
+}
+
+int RedSocial::mostrarAmigos(
+    const string& nombreUsuario) const
+{
+    Usuario* usuario = buscarUsuario(nombreUsuario);
+
+    if (usuario == nullptr)
+    {
+        cout << "El usuario no existe.\n";
+        return -1;
+    }
+
+    int encontrados = 0;
+
+    cout << "\nAmigos de " << nombreUsuario << ":\n";
+
+    for (int i = 0; i < cantidadAmistades; i++)
+    {
+        Usuario* amigo = nullptr;
+
+        if (amigosA[i] == usuario)
+            amigo = amigosB[i];
+        else if (amigosB[i] == usuario)
+            amigo = amigosA[i];
+
+        if (amigo != nullptr)
+        {
+            cout << "- " << amigo->getNombreUsuario() << '\n';
+            encontrados++;
+        }
+    }
+
+    if (encontrados == 0)
+        cout << "Este usuario todavía no tiene amigos.\n";
+
+    cout << "Total de amigos: " << encontrados << '\n';
+
+    return encontrados;
+}
+
+int RedSocial::mostrarSugerencias(
+    const string& nombreUsuario,
+    int cantidadMaxima) const
+{
+    Usuario* usuario = buscarUsuario(nombreUsuario);
+
+    if (usuario == nullptr || cantidadMaxima <= 0)
+    {
+        cout << "No se pueden mostrar las sugerencias.\n";
+        return -1;
+    }
+
+    // Arreglos temporales creados dinámicamente.
+    Usuario** candidatos = new Usuario*[cantidadUsuarios];
+    int* puntuaciones = new int[cantidadUsuarios];
+
+    int cantidadCandidatos = 0;
+
+    // Buscar usuarios que todavía no sean amigos.
+    for (int i = 0; i < cantidadUsuarios; i++)
+    {
+        Usuario* candidato = usuarios[i];
+
+        if (candidato == nullptr || candidato == usuario)
+            continue;
+
+        if (sonAmigos(nombreUsuario, candidato->getNombreUsuario()))
+            continue;
+
+        int comunes = contarAmigosEnComun(
+            nombreUsuario,
+            candidato->getNombreUsuario());
+
+        // Solo sugerir personas con al menos un amigo en común.
+        if (comunes > 0)
+        {
+            candidatos[cantidadCandidatos] = candidato;
+            puntuaciones[cantidadCandidatos] = comunes;
+            cantidadCandidatos++;
+        }
+    }
+
+    // Ordenar por amigos en común, de mayor a menor.
+    for (int i = 1; i < cantidadCandidatos; i++)
+    {
+        Usuario* candidatoActual = candidatos[i];
+        int puntuacionActual = puntuaciones[i];
+        int j = i - 1;
+
+        while (j >= 0 && puntuaciones[j] < puntuacionActual)
+        {
+            candidatos[j + 1] = candidatos[j];
+            puntuaciones[j + 1] = puntuaciones[j];
+            j--;
+        }
+
+        candidatos[j + 1] = candidatoActual;
+        puntuaciones[j + 1] = puntuacionActual;
+    }
+
+    cout << "\nSugerencias de amistad para "
+         << nombreUsuario << ":\n";
+
+    int mostrados = cantidadCandidatos;
+
+    if (mostrados > cantidadMaxima)
+        mostrados = cantidadMaxima;
+
+    for (int i = 0; i < mostrados; i++)
+    {
+        cout << i + 1 << ". "
+             << candidatos[i]->getNombreUsuario()
+             << " | Amigos en comun: "
+             << puntuaciones[i] << '\n';
+    }
+
+    if (mostrados == 0)
+    {
+        cout << "No hay sugerencias con amigos en comun.\n";
+    }
+
+    delete[] candidatos;
+    delete[] puntuaciones;
+
+    return mostrados;
+}
+
+int RedSocial::mostrarTresAmigosAleatorios(
+    const string& nombreUsuario) const
+{
+    Usuario* usuario = buscarUsuario(nombreUsuario);
+
+    if (usuario == nullptr)
+    {
+        cout << "El usuario no existe.\n";
+        return -1;
+    }
+
+    // Contar cuántos amigos tiene el usuario.
+    int totalAmigos = 0;
+
+    for (int i = 0; i < cantidadAmistades; i++)
+    {
+        if (amigosA[i] == usuario || amigosB[i] == usuario)
+            totalAmigos++;
+    }
+
+    if (totalAmigos == 0)
+    {
+        cout << "Este usuario no tiene amigos para mostrar.\n";
+        return 0;
+    }
+
+    // Guardar temporalmente los amigos y sus pesos.
+    Usuario** candidatos = new Usuario*[totalAmigos];
+    int* pesos = new int[totalAmigos];
+    bool* seleccionados = new bool[totalAmigos];
+
+    int posicion = 0;
+
+    for (int i = 0; i < cantidadAmistades; i++)
+    {
+        Usuario* amigo = nullptr;
+
+        if (amigosA[i] == usuario)
+            amigo = amigosB[i];
+        else if (amigosB[i] == usuario)
+            amigo = amigosA[i];
+
+        if (amigo == nullptr)
+            continue;
+
+        candidatos[posicion] = amigo;
+        seleccionados[posicion] = false;
+
+        int comunes = contarAmigosEnComun(
+            nombreUsuario,
+            amigo->getNombreUsuario());
+
+        // Multiplicamos por dos los pesos para usar enteros:
+        // peso 1.0 -> 2
+        // peso 2.5 -> 5
+        // peso 3.5 -> 7
+        if (comunes <= 10)
+            pesos[posicion] = 2;
+        else if (comunes <= 20)
+            pesos[posicion] = 5;
+        else
+            pesos[posicion] = 7;
+
+        posicion++;
+    }
+
+    int cantidadAMostrar = totalAmigos;
+
+    if (cantidadAMostrar > 3)
+        cantidadAMostrar = 3;
+
+    cout << "\nAmigos seleccionados aleatoriamente:\n";
+
+    int mostrados = 0;
+
+    while (mostrados < cantidadAMostrar)
+    {
+        int pesoTotal = 0;
+
+        for (int i = 0; i < totalAmigos; i++)
+        {
+            if (!seleccionados[i])
+                pesoTotal += pesos[i];
+        }
+
+        if (pesoTotal == 0)
+            break;
+
+        int sorteo = rand() % pesoTotal;
+        int acumulado = 0;
+
+        for (int i = 0; i < totalAmigos; i++)
+        {
+            if (seleccionados[i])
+                continue;
+
+            acumulado += pesos[i];
+
+            if (sorteo < acumulado)
+            {
+                seleccionados[i] = true;
+
+                cout << "\nUsuario: "
+                     << candidatos[i]->getNombreUsuario()
+                     << "\nFoto de perfil: "
+                     << candidatos[i]->getRutaFotoPerfil()
+                     << "\nPeso de seleccion: "
+                     << pesos[i] << "\n";
+
+                mostrados++;
+                break;
+            }
+        }
+    }
+
+    delete[] candidatos;
+    delete[] pesos;
+    delete[] seleccionados;
+
+    return mostrados;
+}
+
+void RedSocial::mostrarEstadisticas(int iteraciones) const
+{
+    if (iteraciones < 0)
+        iteraciones = 0;
+
+    unsigned long long memoriaEstimada = 0;
+
+    // Memoria de los arreglos dinámicos de punteros.
+    memoriaEstimada +=
+        static_cast<unsigned long long>(capacidadUsuarios) *
+        sizeof(Usuario*);
+
+    memoriaEstimada +=
+        static_cast<unsigned long long>(capacidadSolicitudes) *
+        sizeof(SolicitudAmistad*);
+
+    memoriaEstimada +=
+        static_cast<unsigned long long>(capacidadAmistades) *
+        sizeof(Usuario*) * 2;
+
+    memoriaEstimada +=
+        static_cast<unsigned long long>(capacidadMensajes) *
+        sizeof(Mensaje*);
+
+    // Tamaño base de los objetos almacenados.
+    for (int i = 0; i < cantidadUsuarios; i++)
+    {
+        if (usuarios[i] != nullptr)
+            memoriaEstimada += sizeof(Usuario);
+    }
+
+    for (int i = 0; i < cantidadSolicitudes; i++)
+    {
+        if (solicitudes[i] != nullptr)
+            memoriaEstimada += sizeof(SolicitudAmistad);
+    }
+
+    for (int i = 0; i < cantidadMensajes; i++)
+    {
+        if (mensajes[i] != nullptr)
+            memoriaEstimada += sizeof(Mensaje);
+    }
+
+    cout << "\n========== ESTADISTICAS ==========\n";
+    cout << "Iteraciones realizadas: " << iteraciones << '\n';
+    cout << "Memoria estimada: "
+         << memoriaEstimada << " bytes\n";
+    cout << "==================================\n";
+}
+
+int RedSocial::mostrarSolicitudesRecibidas(
+    const string& nombreUsuario) const
+{
+    Usuario* usuario = buscarUsuario(nombreUsuario);
+
+    if (usuario == nullptr)
+        return -1;
+
+    int encontrados = 0;
+
+    cout << "\nSolicitudes recibidas pendientes:\n";
+
+    for (int i = 0; i < cantidadSolicitudes; i++)
+    {
+        SolicitudAmistad* solicitud = solicitudes[i];
+
+        if (solicitud->getReceptor() == usuario &&
+            solicitud->estaPendiente())
+        {
+            cout << "Indice: " << i
+                 << " | De: "
+                 << solicitud->getEmisor()->getNombreUsuario()
+                 << " | Fecha: "
+                 << solicitud->getFecha() << '\n';
+
+            encontrados++;
+        }
+    }
+
+    if (encontrados == 0)
+        cout << "No tienes solicitudes pendientes.\n";
+
+    return encontrados;
+}
+
+bool RedSocial::responderSolicitudDeUsuario(
+    const string& nombreUsuario,
+    int indiceSolicitud,
+    bool aceptar)
+{
+    Usuario* usuario = buscarUsuario(nombreUsuario);
+
+    if (usuario == nullptr)
+        return false;
+
+    SolicitudAmistad* solicitud =
+        obtenerSolicitudPorIndice(indiceSolicitud);
+
+    if (solicitud == nullptr)
+        return false;
+
+    if (solicitud->getReceptor() != usuario)
+        return false;
+
+    if (!solicitud->estaPendiente())
+        return false;
+
+    return responderSolicitud(indiceSolicitud, aceptar);
 }

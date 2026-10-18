@@ -102,6 +102,8 @@ CMakeFiles/Desafio2-informatica2.dir/almacenamiento.cpp.obj: \
  C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\usuario.h \
  C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\solicitudamistad.h \
  C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\mensaje.h \
+ C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\album.h \
+ C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\foto.h \
  C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/fstream \
  C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/istream \
  C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ios \

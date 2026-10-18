@@ -1,0 +1,1 @@
+admin;01/01/2000;admin@udeabook.com;perfil_admin.jpg;1234;Medellin;Colombia;18/10/2026

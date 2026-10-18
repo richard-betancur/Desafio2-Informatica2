@@ -7,7 +7,7 @@
 				{
 					"build" : ".",
 					"hasInstallRule" : true,
-					"jsonFile" : "directory-.-Debug-e71fe6940dc4d5acb4a7.json",
+					"jsonFile" : "directory-.-Debug-df8d6aa0cf115be66052.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.16"
@@ -40,7 +40,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "Desafio2-informatica2::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-Desafio2-informatica2-Debug-fc2980a2c5a5d8881ea7.json",
+					"jsonFile" : "target-Desafio2-informatica2-Debug-f56ba8250a72cb785a47.json",
 					"name" : "Desafio2-informatica2",
 					"projectIndex" : 0
 				}

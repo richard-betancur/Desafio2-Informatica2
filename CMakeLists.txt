@@ -21,6 +21,7 @@ add_executable(Desafio2-informatica2
     foto.h
     redsocial.h
     redsocial.cpp
+    usuarios.txt
     )
 
 include(GNUInstallDirs)
