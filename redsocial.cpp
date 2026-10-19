@@ -28,6 +28,10 @@ RedSocial::RedSocial()
     capacidadMensajes = 2;
     cantidadMensajes = 0;
     mensajes = new Mensaje*[capacidadMensajes];
+
+    capacidadPerfilesMostrados = 6;
+    cantidadPerfilesMostrados = 0;
+    perfilesMostrados = new Usuario*[capacidadPerfilesMostrados];
 }
 
 RedSocial::~RedSocial()
@@ -41,6 +45,7 @@ RedSocial::~RedSocial()
         delete mensajes[i];
 
     delete[] mensajes;
+    delete[] perfilesMostrados;
 
     for (int i = 0; i < cantidadUsuarios; i++)
         delete usuarios[i];
@@ -69,7 +74,7 @@ void RedSocial::ampliarSolicitudes()
     SolicitudAmistad** nuevoArreglo = new SolicitudAmistad*[nuevaCapacidad];
 
     for (int i = 0; i < cantidadSolicitudes; i++)
-    nuevoArreglo[i] = solicitudes[i];
+        nuevoArreglo[i] = solicitudes[i];
 
     delete[] solicitudes;
     solicitudes = nuevoArreglo;
@@ -682,7 +687,7 @@ int RedSocial::mostrarSugerencias(
 {
     Usuario* usuario = buscarUsuario(nombreUsuario);
 
-    if (usuario == nullptr || cantidadMaxima <= 0)
+    if (usuario == nullptr || cantidadMaxima < 1 || cantidadMaxima > 20)
     {
         cout << "No se pueden mostrar las sugerencias.\n";
         return -1;
@@ -703,6 +708,21 @@ int RedSocial::mostrarSugerencias(
             continue;
 
         if (sonAmigos(nombreUsuario, candidato->getNombreUsuario()))
+            continue;
+
+        bool solicitudPendiente = false;
+        for (int j = 0; j < cantidadSolicitudes; ++j)
+        {
+            SolicitudAmistad* solicitud = solicitudes[j];
+            if (solicitud->estaPendiente() &&
+                ((solicitud->getEmisor() == usuario && solicitud->getReceptor() == candidato) ||
+                 (solicitud->getEmisor() == candidato && solicitud->getReceptor() == usuario)))
+            {
+                solicitudPendiente = true;
+                break;
+            }
+        }
+        if (solicitudPendiente)
             continue;
 
         int comunes = contarAmigosEnComun(
@@ -763,125 +783,85 @@ int RedSocial::mostrarSugerencias(
     return mostrados;
 }
 
-int RedSocial::mostrarTresAmigosAleatorios(
-    const string& nombreUsuario) const
+void RedSocial::registrarPerfilMostrado(Usuario* usuario)
+{
+    if (usuario == nullptr) return;
+    for (int i = 0; i < cantidadPerfilesMostrados; ++i)
+        if (perfilesMostrados[i] == usuario) return;
+    if (cantidadPerfilesMostrados == capacidadPerfilesMostrados) {
+        int nueva = capacidadPerfilesMostrados * 2;
+        Usuario** temporal = new Usuario*[nueva];
+        for (int i = 0; i < cantidadPerfilesMostrados; ++i)
+            temporal[i] = perfilesMostrados[i];
+        delete[] perfilesMostrados;
+        perfilesMostrados = temporal;
+        capacidadPerfilesMostrados = nueva;
+    }
+    perfilesMostrados[cantidadPerfilesMostrados++] = usuario;
+}
+
+int RedSocial::mostrarTresAmigosAleatorios(const string& nombreUsuario)
 {
     Usuario* usuario = buscarUsuario(nombreUsuario);
-
-    if (usuario == nullptr)
-    {
+    if (usuario == nullptr) {
         cout << "El usuario no existe.\n";
         return -1;
     }
 
-    // Contar cuántos amigos tiene el usuario.
-    int totalAmigos = 0;
+    // Solo candidatos que sean amigos y no hayan aparecido antes en esta sesion.
+    Usuario** candidatos = new Usuario*[cantidadAmistades > 0 ? cantidadAmistades : 1];
+    int* pesos = new int[cantidadAmistades > 0 ? cantidadAmistades : 1];
+    int total = 0;
+    for (int i = 0; i < cantidadAmistades; ++i) {
+        Usuario* amigo = nullptr;
+        if (amigosA[i] == usuario) amigo = amigosB[i];
+        else if (amigosB[i] == usuario) amigo = amigosA[i];
+        if (amigo == nullptr) continue;
 
-    for (int i = 0; i < cantidadAmistades; i++)
-    {
-        if (amigosA[i] == usuario || amigosB[i] == usuario)
-            totalAmigos++;
+        bool yaMostrado = false;
+        for (int j = 0; j < cantidadPerfilesMostrados; ++j)
+            if (perfilesMostrados[j] == amigo) { yaMostrado = true; break; }
+        if (yaMostrado) continue;
+
+        int comunes = contarAmigosEnComun(nombreUsuario, amigo->getNombreUsuario());
+        candidatos[total] = amigo;
+        pesos[total] = (comunes <= 10 ? 2 : (comunes <= 20 ? 5 : 7));
+        ++total;
     }
 
-    if (totalAmigos == 0)
-    {
-        cout << "Este usuario no tiene amigos para mostrar.\n";
+    if (total == 0) {
+        cout << "No hay mas amigos sin repetir para mostrar.\n";
+        delete[] candidatos; delete[] pesos;
         return 0;
     }
 
-    // Guardar temporalmente los amigos y sus pesos.
-    Usuario** candidatos = new Usuario*[totalAmigos];
-    int* pesos = new int[totalAmigos];
-    bool* seleccionados = new bool[totalAmigos];
-
-    int posicion = 0;
-
-    for (int i = 0; i < cantidadAmistades; i++)
-    {
-        Usuario* amigo = nullptr;
-
-        if (amigosA[i] == usuario)
-            amigo = amigosB[i];
-        else if (amigosB[i] == usuario)
-            amigo = amigosA[i];
-
-        if (amigo == nullptr)
-            continue;
-
-        candidatos[posicion] = amigo;
-        seleccionados[posicion] = false;
-
-        int comunes = contarAmigosEnComun(
-            nombreUsuario,
-            amigo->getNombreUsuario());
-
-        // Multiplicamos por dos los pesos para usar enteros:
-        // peso 1.0 -> 2
-        // peso 2.5 -> 5
-        // peso 3.5 -> 7
-        if (comunes <= 10)
-            pesos[posicion] = 2;
-        else if (comunes <= 20)
-            pesos[posicion] = 5;
-        else
-            pesos[posicion] = 7;
-
-        posicion++;
-    }
-
-    int cantidadAMostrar = totalAmigos;
-
-    if (cantidadAMostrar > 3)
-        cantidadAMostrar = 3;
-
-    cout << "\nAmigos seleccionados aleatoriamente:\n";
-
+    int objetivo = total < 3 ? total : 3;
     int mostrados = 0;
-
-    while (mostrados < cantidadAMostrar)
-    {
+    cout << "\nPerfiles de amigos seleccionados aleatoriamente:\n";
+    while (mostrados < objetivo && total > 0) {
         int pesoTotal = 0;
-
-        for (int i = 0; i < totalAmigos; i++)
-        {
-            if (!seleccionados[i])
-                pesoTotal += pesos[i];
-        }
-
-        if (pesoTotal == 0)
-            break;
-
+        for (int i = 0; i < total; ++i) pesoTotal += pesos[i];
+        if (pesoTotal <= 0) break;
         int sorteo = rand() % pesoTotal;
         int acumulado = 0;
-
-        for (int i = 0; i < totalAmigos; i++)
-        {
-            if (seleccionados[i])
-                continue;
-
+        int elegido = total - 1;
+        for (int i = 0; i < total; ++i) {
             acumulado += pesos[i];
-
-            if (sorteo < acumulado)
-            {
-                seleccionados[i] = true;
-
-                cout << "\nUsuario: "
-                     << candidatos[i]->getNombreUsuario()
-                     << "\nFoto de perfil: "
-                     << candidatos[i]->getRutaFotoPerfil()
-                     << "\nPeso de seleccion: "
-                     << pesos[i] << "\n";
-
-                mostrados++;
-                break;
-            }
+            if (sorteo < acumulado) { elegido = i; break; }
         }
+        Usuario* amigo = candidatos[elegido];
+        cout << "\nUsuario: " << amigo->getNombreUsuario()
+             << "\nFoto de perfil: " << amigo->getRutaFotoPerfil()
+             << "\nPeso relativo: " << (pesos[elegido] == 2 ? "1.0x" : (pesos[elegido] == 5 ? "2.5x" : "3.5x")) << "\n";
+        registrarPerfilMostrado(amigo);
+        ++mostrados;
+        for (int i = elegido; i < total - 1; ++i) {
+            candidatos[i] = candidatos[i + 1];
+            pesos[i] = pesos[i + 1];
+        }
+        --total;
     }
-
-    delete[] candidatos;
-    delete[] pesos;
-    delete[] seleccionados;
-
+    delete[] candidatos; delete[] pesos;
     return mostrados;
 }
 
@@ -908,6 +888,9 @@ void RedSocial::mostrarEstadisticas(int iteraciones) const
     memoriaEstimada +=
         static_cast<unsigned long long>(capacidadMensajes) *
         sizeof(Mensaje*);
+    memoriaEstimada +=
+        static_cast<unsigned long long>(capacidadPerfilesMostrados) *
+        sizeof(Usuario*);
 
     // Tamaño base de los objetos almacenados.
     for (int i = 0; i < cantidadUsuarios; i++)
@@ -928,10 +911,25 @@ void RedSocial::mostrarEstadisticas(int iteraciones) const
             memoriaEstimada += sizeof(Mensaje);
     }
 
+    // Objetos de albumes, arreglos de punteros y objetos de fotos.
+    for (int i = 0; i < cantidadUsuarios; ++i) {
+        Usuario* u = usuarios[i];
+        if (!u) continue;
+        memoriaEstimada += static_cast<unsigned long long>(u->getCantidadAlbumes()) * sizeof(Album*);
+        for (int j = 0; j < u->getCantidadAlbumes(); ++j) {
+            Album* a = u->obtenerAlbumPorIndice(j);
+            if (!a) continue;
+            memoriaEstimada += sizeof(Album);
+            memoriaEstimada += static_cast<unsigned long long>(a->getCantidadFotos()) * sizeof(Foto*);
+            for (int k = 0; k < a->getCantidadFotos(); ++k)
+                if (a->obtenerFotoPorIndice(k)) memoriaEstimada += sizeof(Foto);
+        }
+    }
+
     cout << "\n========== ESTADISTICAS ==========\n";
-    cout << "Iteraciones realizadas: " << iteraciones << '\n';
-    cout << "Memoria estimada: "
-         << memoriaEstimada << " bytes\n";
+    cout << "Iteraciones/elementos reportados: " << iteraciones << '\n';
+    cout << "Nota: el conteo de iteraciones es parcial; memoria estimada: ";
+    cout << memoriaEstimada << " bytes\n";
     cout << "==================================\n";
 }
 

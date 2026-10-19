@@ -9,6 +9,7 @@ class Usuario;
 
 class Mensaje
 {
+    friend class Almacenamiento;
 private:
     Usuario* remitente;
     Usuario* destinatario;

@@ -1,4 +1,3 @@
-
 #ifndef REDSOCIAL_H
 #define REDSOCIAL_H
 
@@ -10,6 +9,7 @@
 
 class RedSocial
 {
+    friend class Almacenamiento;
 private:
     // Usuarios
     Usuario** usuarios;
@@ -36,7 +36,13 @@ private:
     int cantidadMensajes;
     int capacidadMensajes;
 
+    // Perfiles ya mostrados en esta sesion (para evitar repetidos al actualizar).
+    Usuario** perfilesMostrados;
+    int cantidadPerfilesMostrados;
+    int capacidadPerfilesMostrados;
+
     void ampliarMensajes();
+    void registrarPerfilMostrado(Usuario* usuario);
 
 public:
     RedSocial();
@@ -123,7 +129,7 @@ public:
         int cantidadMaxima) const;
 
     int mostrarTresAmigosAleatorios(
-        const string& nombreUsuario) const;
+        const string& nombreUsuario);
 
     void mostrarEstadisticas(int iteraciones) const;
 

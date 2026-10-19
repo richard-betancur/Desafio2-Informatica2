@@ -1,4 +1,3 @@
-
 #ifndef ALBUM_H
 #define ALBUM_H
 
@@ -9,9 +8,10 @@ class Usuario;
 
 class Album
 {
+    friend class Almacenamiento;
 private:
-    std::string nombre;
-    std::string ruta;
+    string nombre;
+    string ruta;
     int privacidad;
 
     Foto** fotos;
@@ -21,15 +21,15 @@ private:
     void ampliarCapacidad();
 
 public:
-    Album(const std::string& nombreAlbum,
-          const std::string& rutaAlbum,
+    Album(const string& nombreAlbum,
+          const string& rutaAlbum,
           int nivelPrivacidad);
 
     Album(const Album& otro);
     ~Album();
 
-    std::string getNombre() const;
-    std::string getRuta() const;
+    string getNombre() const;
+    string getRuta() const;
     int getPrivacidad() const;
     int getCantidadFotos() const;
     Foto* obtenerFotoPorIndice(int indice) const;
@@ -41,7 +41,6 @@ public:
     bool puedeVerlo(const Usuario* visitante,
                     const Usuario* propietario,
                     bool sonAmigos) const;
-
     bool agregarFoto(const Foto& foto);
 
     Album& operator=(const Album& otro);

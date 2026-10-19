@@ -7,6 +7,7 @@ using namespace std;
 
 class Foto
 {
+    friend class Almacenamiento;
 private:
     string fechaCaptura;
     unsigned long long tamanoBytes;

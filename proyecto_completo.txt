@@ -1,0 +1,3636 @@
+
+C:\Users\user\OneDrive\Documentos\Desafio2-informatica2>(echo === ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\album.cpp ===   & type "C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\album.cpp"   & echo.) 
+=== ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\album.cpp === 
+#include "album.h"
+#include "usuario.h"
+
+// Constructor
+Album::Album(const string& nombreAlbum, const string& rutaAlbum, int nivelPrivacidad)
+    :nombre(nombreAlbum),
+    ruta(rutaAlbum),
+    privacidad(nivelPrivacidad),
+    fotos(nullptr),
+    cantidadFotos(0),
+    capacidadFotos(0)
+{
+    if (privacidad < 0 || privacidad > 2)
+        privacidad = 2;
+}
+
+// Constructor de copia
+Album::Album(const Album& otro)
+    : nombre(otro.nombre),
+    ruta(otro.ruta),
+    privacidad(otro.privacidad),
+    fotos(nullptr),
+    cantidadFotos(0),
+    capacidadFotos(0)
+{
+    if (otro.cantidadFotos > 0)
+    {
+        capacidadFotos = otro.cantidadFotos;
+        fotos = new Foto*[capacidadFotos];
+
+        for (int i = 0; i < otro.cantidadFotos; i++)
+        {
+            fotos[i] = new Foto(*otro.fotos[i]);
+            cantidadFotos++;
+        }
+    }
+}
+
+// Destructor
+Album::~Album()
+{
+    for (int i = 0; i < cantidadFotos; i++)
+        delete fotos[i];
+
+    delete[] fotos;
+}
+
+// Ampliar capacidad del arreglo dinamico
+void Album::ampliarCapacidad()
+{
+    int nuevaCapacidad;
+
+    if (capacidadFotos == 0)
+        nuevaCapacidad = 2;
+    else
+        nuevaCapacidad = capacidadFotos * 2;
+
+    Foto** nuevoArreglo = new Foto*[nuevaCapacidad];
+
+    for (int i = 0; i < cantidadFotos; i++)
+        nuevoArreglo[i] = fotos[i];
+
+    delete[] fotos;
+
+    fotos = nuevoArreglo;
+    capacidadFotos = nuevaCapacidad;
+}
+
+// Getters
+string Album::getNombre() const
+{
+    return nombre;
+}
+
+string Album::getRuta() const
+{
+    return ruta;
+}
+
+int Album::getPrivacidad() const
+{
+    return privacidad;
+}
+
+int Album::getCantidadFotos() const
+{
+    return cantidadFotos;
+}
+
+Foto* Album::obtenerFotoPorIndice(int indice) const
+{
+    if (indice < 0 || indice >= cantidadFotos)
+        return nullptr;
+
+    return fotos[indice];
+}
+
+// Consultas de privacidad
+bool Album::esPublico() const
+{
+    return privacidad == 0;
+}
+
+bool Album::esSoloAmigos() const
+{
+    return privacidad == 1;
+}
+
+bool Album::esPrivado() const
+{
+    return privacidad == 2;
+}
+
+bool Album::puedeVerlo(const Usuario* visitante, const Usuario* propietario, bool sonAmigos) const
+{
+    if (visitante == nullptr || propietario == nullptr)
+        return false;
+
+    // El propietario siempre puede ver su album
+    if (visitante == propietario)
+        return true;
+
+    if (esPublico())
+        return true;
+
+    if (esSoloAmigos() && sonAmigos)
+        return true;
+
+    return false;
+}
+
+// Agregar una foto preexistente
+bool Album::agregarFoto(const Foto& foto)
+{
+    if (!foto.esValida())
+        return false;
+
+    if (cantidadFotos == capacidadFotos)
+        ampliarCapacidad();
+
+    fotos[cantidadFotos] = new Foto(foto);
+    cantidadFotos++;
+
+    return true;
+}
+
+// Operador de asignacion
+Album& Album::operator=(const Album& otro)
+{
+    if (this == &otro)
+        return *this;
+
+    // Liberar las fotos actuales
+    for (int i = 0; i < cantidadFotos; i++)
+        delete fotos[i];
+
+    delete[] fotos;
+
+    fotos = nullptr;
+    cantidadFotos = 0;
+    capacidadFotos = 0;
+
+    nombre = otro.nombre;
+    ruta = otro.ruta;
+    privacidad = otro.privacidad;
+
+    // Copiar las fotos
+    if (otro.cantidadFotos > 0)
+    {
+        capacidadFotos = otro.cantidadFotos;
+        fotos = new Foto*[capacidadFotos];
+
+        for (int i = 0; i < otro.cantidadFotos; i++)
+        {
+            fotos[i] = new Foto(*otro.fotos[i]);
+            cantidadFotos++;
+        }
+    }
+
+    return *this;
+}
+
+
+C:\Users\user\OneDrive\Documentos\Desafio2-informatica2>(echo === ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\almacenamiento.cpp ===   & type "C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\almacenamiento.cpp"   & echo.) 
+=== ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\almacenamiento.cpp === 
+#include "almacenamiento.h"
+#include "redsocial.h"
+#include "usuario.h"
+
+#include <fstream>
+#include <sstream>
+
+bool Almacenamiento::guardarUsuarios(const RedSocial& red, const string& rutaArchivo)
+{
+    ofstream archivo(rutaArchivo);
+
+    if (!archivo.is_open())
+        return false;
+
+    for (int i = 0; i < red.getCantidadUsuarios(); i++)
+    {
+        // Esta función la añadiremos a RedSocial.
+        Usuario* usuario = red.obtenerUsuarioPorIndice(i);
+
+        archivo << usuario->getNombreUsuario() << ";"
+                << usuario->getFechaNacimiento() << ";"
+                << usuario->getCorreo() << ";"
+                << usuario->getRutaFotoPerfil() << ";"
+                << usuario->getContraseña() << ";"
+                << usuario->getCiudad() << ";"
+                << usuario->getPais() << ";"
+                << usuario->getFechaInscripcion() << "\n";
+    }
+
+    archivo.close();
+    return true;
+}
+
+bool Almacenamiento::cargarUsuarios(RedSocial& red, const string& rutaArchivo)
+{
+    ifstream archivo(rutaArchivo);
+
+    if (!archivo.is_open())
+        return false;
+    string linea;
+
+    while (getline(archivo, linea))
+    {
+        if (linea.empty())
+            continue;
+
+        stringstream separador(linea);
+
+        string nombre;
+        string nacimiento;
+        string correo;
+        string rutaFoto;
+        string contraseña;
+        string ciudad;
+        string pais;
+        string inscripcion;
+
+        if (!getline(separador, nombre, ';') ||
+            !getline(separador, nacimiento, ';') ||
+            !getline(separador, correo, ';') ||
+            !getline(separador, rutaFoto, ';') ||
+            !getline(separador, contraseña, ';') ||
+            !getline(separador, ciudad, ';') ||
+            !getline(separador, pais, ';') ||
+            !getline(separador, inscripcion, ';'))
+        {
+            continue;
+        }
+
+        red.agregarUsuario(nombre, nacimiento, correo, rutaFoto, contraseña, ciudad, pais, inscripcion);
+    }
+
+    archivo.close();
+    return true;
+}
+
+C:\Users\user\OneDrive\Documentos\Desafio2-informatica2>(echo === ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\foto.cpp ===   & type "C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\foto.cpp"   & echo.) 
+=== ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\foto.cpp === 
+#include "foto.h"
+
+Foto::Foto(const std::string& fecha,
+           unsigned long long tamano,
+           const std::string& rutaArchivo,
+           int likes)
+    : fechaCaptura(fecha),
+    tamanoBytes(tamano),
+    ruta(rutaArchivo),
+    cantidadLikes(likes)
+{
+}
+
+Foto::Foto(const Foto& otra)
+    : fechaCaptura(otra.fechaCaptura),
+    tamanoBytes(otra.tamanoBytes),
+    ruta(otra.ruta),
+    cantidadLikes(otra.cantidadLikes)
+{
+}
+
+std::string Foto::getFechaCaptura() const
+{
+    return fechaCaptura;
+}
+
+unsigned long long Foto::getTamanoBytes() const
+{
+    return tamanoBytes;
+}
+
+std::string Foto::getRuta() const
+{
+    return ruta;
+}
+
+int Foto::getCantidadLikes() const
+{
+    return cantidadLikes;
+}
+
+bool Foto::darLike()
+{
+    if (!esValida())
+        return false;
+
+    cantidadLikes++;
+    return true;
+}
+
+bool Foto::quitarLike()
+{
+    if (cantidadLikes <= 0)
+        return false;
+
+    cantidadLikes--;
+    return true;
+}
+
+bool Foto::esValida() const
+{
+    return !fechaCaptura.empty()
+    && !ruta.empty()
+        && tamanoBytes > 0
+        && cantidadLikes >= 0;
+}
+
+bool Foto::operator<(const Foto& otra) const
+{
+    return fechaCaptura < otra.fechaCaptura;
+}
+
+
+C:\Users\user\OneDrive\Documentos\Desafio2-informatica2>(echo === ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\main.cpp ===   & type "C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\main.cpp"   & echo.) 
+=== ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\main.cpp === 
+
+#include <iostream>
+#include <string>
+#include <limits>
+#include <cstdlib>
+#include <ctime>
+#include <filesystem>
+
+#include "redsocial.h"
+#include "almacenamiento.h"
+#include "usuario.h"
+#include "solicitudamistad.h"
+#include "mensaje.h"
+#include "album.h"
+#include "foto.h"
+
+using namespace std;
+namespace fs = std::filesystem;
+
+// --------------------------------------------------
+// Lectura segura de datos
+// --------------------------------------------------
+
+int leerEntero(const string& mensaje)
+{
+    int numero;
+
+    while (true)
+    {
+        cout << mensaje;
+
+        if (cin >> numero)
+        {
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            return numero;
+        }
+
+        cout << "Entrada invalida. Escribe un numero.\n";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+}
+
+string leerTexto(const string& mensaje)
+{
+    string texto;
+
+    cout << mensaje;
+    getline(cin, texto);
+
+    return texto;
+}
+
+// --------------------------------------------------
+// Inicio de sesion
+// --------------------------------------------------
+
+Usuario* iniciarSesion(RedSocial& red)
+{
+    for (int intento = 1; intento <= 3; intento++)
+    {
+        cout << "\n========== INICIO DE SESION ==========\n";
+
+        string usuario = leerTexto("Nombre de usuario: ");
+        string contrasena = leerTexto("Contrasena: ");
+
+        Usuario* encontrado = red.buscarUsuario(usuario);
+
+        if (encontrado != nullptr &&
+            encontrado->verificarContraseña(contrasena))
+        {
+            cout << "\nBienvenido a Ude@Book, "
+                 << encontrado->getNombreUsuario() << "!\n";
+
+            return encontrado;
+        }
+
+        cout << "Usuario o contrasena incorrectos.\n";
+        cout << "Intento " << intento << " de 3.\n";
+    }
+
+    cout << "\nSe agotaron los intentos de inicio de sesion.\n";
+    return nullptr;
+}
+
+// --------------------------------------------------
+// Crear una cuenta de prueba si no hay usuarios
+// --------------------------------------------------
+
+bool prepararUsuarios(RedSocial& red, Almacenamiento& almacenamiento)
+{
+    cout << "\nCarpeta de ejecucion:\n"
+         << fs::current_path().string() << "\n";
+
+    cout << "Buscando archivo: "
+         << fs::absolute("usuarios.txt").string() << "\n";
+
+    bool existeArchivo = fs::exists("usuarios.txt");
+
+    cout << "Existe usuarios.txt: "
+         << (existeArchivo ? "SI" : "NO") << "\n";
+
+    if (existeArchivo)
+    {
+        almacenamiento.cargarUsuarios(red, "usuarios.txt");
+    }
+    else
+    {
+        cout << "\nEl archivo usuarios.txt no existe.\n";
+    }
+
+    if (red.getCantidadUsuarios() == 0)
+    {
+        cout << "\nNo se encontraron usuarios guardados.\n";
+        cout << "Se creara una cuenta de prueba.\n";
+
+        bool creado = red.agregarUsuario(
+            "admin",
+            "01/01/2000",
+            "admin@udeabook.com",
+            "perfil_admin.jpg",
+            "1234",
+            "Medellin",
+            "Colombia",
+            "18/10/2026"
+            );
+
+        if (!creado)
+        {
+            cout << "No se pudo crear la cuenta de prueba.\n";
+            return false;
+        }
+
+        if (!almacenamiento.guardarUsuarios(red, "usuarios.txt"))
+        {
+            cout << "No se pudieron guardar los usuarios.\n";
+            cout << "Revisa los permisos de la carpeta.\n";
+            return false;
+        }
+
+        cout << "\nCuenta de prueba creada y guardada.\n";
+        cout << "Usuario: admin\n";
+        cout << "Contrasena: 1234\n";
+    }
+
+    return true;
+}
+
+// --------------------------------------------------
+// Menu principal
+// --------------------------------------------------
+
+void mostrarMenu()
+{
+    cout << "\n";
+    cout << "========================================\n";
+    cout << "             Ude@Book\n";
+    cout << "========================================\n";
+    cout << "1. Mostrar amigos\n";
+    cout << "2. Enviar solicitud de amistad\n";
+    cout << "3. Ver solicitudes recibidas\n";
+    cout << "4. Responder solicitud de amistad\n";
+    cout << "5. Ver sugerencias de amistad\n";
+    cout << "6. Mostrar tres amigos aleatorios\n";
+    cout << "7. Enviar mensaje\n";
+    cout << "8. Leer mensajes no leidos\n";
+    cout << "9. Mostrar mensajes recibidos por fecha\n";
+    cout << "10. Buscar mensajes en un rango de fechas\n";
+    cout << "11. Ver albumes de otro usuario\n";
+    cout << "0. Cerrar sesion y salir\n";
+    cout << "========================================\n";
+}
+
+// --------------------------------------------------
+// Programa principal
+// --------------------------------------------------
+
+int main()
+{
+    srand(static_cast<unsigned int>(time(nullptr)));
+
+    RedSocial red;
+    Almacenamiento almacenamiento;
+
+    cout << "========================================\n";
+    cout << "       BIENVENIDO A Ude@Book\n";
+    cout << "========================================\n";
+
+    if (!prepararUsuarios(red, almacenamiento))
+    {
+        cout << "\nNo se pudo preparar la red social.\n";
+        return 1;
+    }
+
+    Usuario* usuarioActual = iniciarSesion(red);
+
+    if (usuarioActual == nullptr)
+    {
+        return 0;
+    }
+
+    const string nombreActual = usuarioActual->getNombreUsuario();
+
+    int opcion;
+    int iteraciones = 0;
+
+    do
+    {
+        mostrarMenu();
+        opcion = leerEntero("Selecciona una opcion: ");
+
+        switch (opcion)
+        {
+        case 1:
+        {
+            iteraciones = red.mostrarAmigos(nombreActual);
+            break;
+        }
+
+        case 2:
+        {
+            string destinatario =
+                leerTexto("Nombre del usuario al que deseas enviar solicitud: ");
+
+            string fecha = leerTexto(
+                "Fecha de la solicitud (AAAA-MM-DD): ");
+
+            if (red.enviarSolicitud(nombreActual, destinatario, fecha))
+            {
+                cout << "Solicitud enviada correctamente.\n";
+            }
+            else
+            {
+                cout << "No se pudo enviar la solicitud.\n";
+            }
+
+            iteraciones = 1;
+            break;
+        }
+
+        case 3:
+        {
+            iteraciones = red.mostrarSolicitudesRecibidas(nombreActual);
+            break;
+        }
+
+        case 4:
+        {
+            int indice = leerEntero(
+                "Escribe el indice de la solicitud que deseas responder: ");
+
+            cout << "1. Aceptar\n";
+            cout << "2. Rechazar\n";
+
+            int respuesta = leerEntero("Selecciona una opcion: ");
+
+            if (respuesta != 1 && respuesta != 2)
+            {
+                cout << "Opcion invalida.\n";
+            }
+            else if (red.responderSolicitudDeUsuario(
+                         nombreActual, indice, respuesta == 1))
+            {
+                cout << "Solicitud respondida correctamente.\n";
+            }
+            else
+            {
+                cout << "No se pudo responder la solicitud.\n";
+                cout << "Verifica el indice y que la solicitud sea tuya.\n";
+            }
+
+            iteraciones = 1;
+            break;
+        }
+
+        case 5:
+        {
+            int k = leerEntero(
+                "Cuantas sugerencias deseas consultar: ");
+
+            if (k < 1)
+            {
+                cout << "La cantidad debe ser mayor que cero.\n";
+                iteraciones = 0;
+            }
+            else
+            {
+                iteraciones = red.mostrarSugerencias(nombreActual, k);
+            }
+
+            break;
+        }
+
+        case 6:
+        {
+            iteraciones = red.mostrarTresAmigosAleatorios(nombreActual);
+            break;
+        }
+
+        case 7:
+        {
+            string destinatario =
+                leerTexto("Destinatario del mensaje: ");
+
+            string contenido =
+                leerTexto("Escribe el mensaje (maximo 512 caracteres): ");
+
+            if (contenido.length() > 512)
+            {
+                cout << "El mensaje supera el limite de 512 caracteres.\n";
+                iteraciones = 1;
+                break;
+            }
+
+            string fecha = leerTexto(
+                "Fecha y hora del mensaje (formato AAAA-MM-DD HH:MM): ");
+
+            if (red.enviarMensaje(
+                    nombreActual, destinatario, contenido, fecha))
+            {
+                cout << "Mensaje enviado correctamente.\n";
+            }
+            else
+            {
+                cout << "No se pudo enviar el mensaje.\n";
+                cout << "Comprueba que ambos usuarios sean amigos.\n";
+            }
+
+            iteraciones = 1;
+            break;
+        }
+
+        case 8:
+        {
+            iteraciones = red.leerMensajesNoLeidos(nombreActual);
+            break;
+        }
+
+        case 9:
+        {
+            iteraciones =
+                red.mostrarMensajesRecibidosOrdenados(nombreActual);
+            break;
+        }
+
+        case 10:
+        {
+            string fechaInicio =
+                leerTexto("Fecha inicial (AAAA-MM-DD): ");
+
+            string fechaFin =
+                leerTexto("Fecha final (AAAA-MM-DD): ");
+
+            iteraciones = red.buscarMensajesPorFecha(
+                nombreActual, fechaInicio, fechaFin);
+
+            break;
+        }
+
+        case 11:
+        {
+            string nombreVisitado =
+                leerTexto("Nombre del usuario cuyos albumes deseas ver: ");
+
+            iteraciones = red.mostrarAlbumesVisibles(
+                nombreActual, nombreVisitado);
+
+            break;
+        }
+
+        case 0:
+        {
+            cout << "\nGuardando usuarios...\n";
+
+            if (almacenamiento.guardarUsuarios(red, "usuarios.txt"))
+            {
+                cout << "Usuarios guardados correctamente.\n";
+            }
+            else
+            {
+                cout << "No se pudieron guardar los usuarios.\n";
+            }
+
+            cout << "Cerrando Ude@Book. Hasta pronto!\n";
+            break;
+        }
+
+        default:
+        {
+            cout << "Opcion invalida. Intenta de nuevo.\n";
+            iteraciones = 0;
+            break;
+        }
+        }
+
+        if (opcion != 0)
+        {
+            cout << "\n---------- ESTADISTICAS ----------\n";
+            red.mostrarEstadisticas(iteraciones);
+        }
+
+    } while (opcion != 0);
+
+    return 0;
+}
+
+
+C:\Users\user\OneDrive\Documentos\Desafio2-informatica2>(echo === ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\mensaje.cpp ===   & type "C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\mensaje.cpp"   & echo.) 
+=== ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\mensaje.cpp === 
+#include "mensaje.h"
+
+Mensaje::Mensaje(Usuario* quienEnvia,
+                 Usuario* quienRecibe,
+                 const string& texto,
+                 const string& fechaMensaje)
+{
+    remitente = quienEnvia;
+    destinatario = quienRecibe;
+    contenido = texto;
+    fecha = fechaMensaje;
+    leido = false;
+}
+
+Mensaje::Mensaje(const Mensaje& otro)
+{
+    remitente = otro.remitente;
+    destinatario = otro.destinatario;
+    contenido = otro.contenido;
+    fecha = otro.fecha;
+    leido = otro.leido;
+}
+
+Usuario* Mensaje::getRemitente() const
+{
+    return remitente;
+}
+
+Usuario* Mensaje::getDestinatario() const
+{
+    return destinatario;
+}
+
+std::string Mensaje::getContenido() const
+{
+    return contenido;
+}
+
+std::string Mensaje::getFecha() const
+{
+    return fecha;
+}
+
+bool Mensaje::estaLeido() const
+{
+    return leido;
+}
+
+bool Mensaje::marcarLeido()
+{
+    if (leido)
+        return false;
+
+    leido = true;
+    return true;
+}
+
+bool Mensaje::esValido() const
+{
+    return remitente != nullptr
+           && destinatario != nullptr
+           && !contenido.empty()
+           && contenido.length() <= 512
+           && !fecha.empty();
+}
+
+bool Mensaje::operator<(const Mensaje& otro) const
+{
+    return fecha < otro.fecha;
+}
+
+C:\Users\user\OneDrive\Documentos\Desafio2-informatica2>(echo === ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\redsocial.cpp ===   & type "C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\redsocial.cpp"   & echo.) 
+=== ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\redsocial.cpp === 
+#include <iostream>
+#include <string>
+#include <cstdlib>
+#include <ctime>
+
+#include "redsocial.h"
+#include "album.h"
+#include "foto.h"
+
+
+using namespace std;
+
+RedSocial::RedSocial()
+{
+    capacidadUsuarios = 2;
+    cantidadUsuarios = 0;
+    usuarios = new Usuario*[capacidadUsuarios];
+
+    capacidadSolicitudes = 2;
+    cantidadSolicitudes = 0;
+    solicitudes = new SolicitudAmistad*[capacidadSolicitudes];
+
+    capacidadAmistades = 2;
+    cantidadAmistades = 0;
+    amigosA = new Usuario*[capacidadAmistades];
+    amigosB = new Usuario*[capacidadAmistades];
+
+    capacidadMensajes = 2;
+    cantidadMensajes = 0;
+    mensajes = new Mensaje*[capacidadMensajes];
+}
+
+RedSocial::~RedSocial()
+{
+    for (int i = 0; i < cantidadSolicitudes; i++)
+        delete solicitudes[i];
+
+    delete[] solicitudes;
+
+    for (int i = 0; i < cantidadMensajes; i++)
+        delete mensajes[i];
+
+    delete[] mensajes;
+
+    for (int i = 0; i < cantidadUsuarios; i++)
+        delete usuarios[i];
+
+    delete[] usuarios;
+    delete[] amigosA;
+    delete[] amigosB;
+}
+
+void RedSocial::ampliarCapacidad()
+{
+    int nuevaCapacidad = capacidadUsuarios * 2;
+    Usuario** nuevoArreglo = new Usuario*[nuevaCapacidad];
+
+    for (int i = 0; i < cantidadUsuarios; i++)
+        nuevoArreglo[i] = usuarios[i];
+
+    delete[] usuarios;
+    usuarios = nuevoArreglo;
+    capacidadUsuarios = nuevaCapacidad;
+}
+
+void RedSocial::ampliarSolicitudes()
+{
+    int nuevaCapacidad = capacidadSolicitudes * 2;
+    SolicitudAmistad** nuevoArreglo = new SolicitudAmistad*[nuevaCapacidad];
+
+    for (int i = 0; i < cantidadSolicitudes; i++)
+    nuevoArreglo[i] = solicitudes[i];
+
+    delete[] solicitudes;
+    solicitudes = nuevoArreglo;
+    capacidadSolicitudes = nuevaCapacidad;
+}
+
+void RedSocial::ampliarAmistades()
+{
+    int nuevaCapacidad = capacidadAmistades * 2;
+
+    Usuario** nuevoA = new Usuario*[nuevaCapacidad];
+    Usuario** nuevoB = new Usuario*[nuevaCapacidad];
+
+    for (int i = 0; i < cantidadAmistades; i++)
+    {
+        nuevoA[i] = amigosA[i];
+        nuevoB[i] = amigosB[i];
+    }
+
+    delete[] amigosA;
+    delete[] amigosB;
+
+    amigosA = nuevoA;
+    amigosB = nuevoB;
+    capacidadAmistades = nuevaCapacidad;
+}
+
+// Agregar usuario con nombre y contraseña
+bool RedSocial::agregarUsuario(const std::string& nombre, const std::string& clave)
+{
+    if (buscarUsuario(nombre) != nullptr)
+        return false;
+
+    if (cantidadUsuarios == capacidadUsuarios)
+        ampliarCapacidad();
+
+    usuarios[cantidadUsuarios] = new Usuario(nombre, clave);
+    cantidadUsuarios++;
+
+    return true;
+}
+
+// Agregar usuario con todos sus datos
+bool RedSocial::agregarUsuario(const string& nombre,
+                               const string& nacimiento,
+                               const string& correo,
+                               const string& rutaFoto,
+                               const string& clave,
+                               const string& ciudad,
+                               const string& pais,
+                               const string& inscripcion)
+{
+    if (buscarUsuario(nombre) != nullptr)
+        return false;
+
+    if (cantidadUsuarios == capacidadUsuarios)
+        ampliarCapacidad();
+
+    usuarios[cantidadUsuarios] = new Usuario(
+        nombre, nacimiento, correo, rutaFoto,
+        clave, ciudad, pais, inscripcion
+        );
+
+    cantidadUsuarios++;
+    return true;
+}
+
+Usuario* RedSocial::buscarUsuario(const string& nombre) const
+{
+    for (int i = 0; i < cantidadUsuarios; i++)
+    {
+        if (usuarios[i]->getNombreUsuario() == nombre)
+            return usuarios[i];
+    }
+
+    return nullptr;
+}
+
+Usuario* RedSocial::obtenerUsuarioPorIndice(int indice) const
+{
+    if (indice < 0 || indice >= cantidadUsuarios)
+        return nullptr;
+
+    return usuarios[indice];
+}
+
+int RedSocial::getCantidadUsuarios() const
+{
+    return cantidadUsuarios;
+}
+
+// Enviar solicitud de amistad
+bool RedSocial::enviarSolicitud(
+    const string& nombreEmisor,
+    const string& nombreReceptor,
+    const string& fecha)
+{
+    Usuario* emisor = buscarUsuario(nombreEmisor);
+    Usuario* receptor = buscarUsuario(nombreReceptor);
+
+    if (emisor == nullptr || receptor == nullptr)
+        return false;
+
+    if (emisor == receptor)
+        return false;
+
+    if (sonAmigos(nombreEmisor, nombreReceptor))
+        return false;
+
+    // Evitar solicitudes pendientes duplicadas en cualquier dirección
+    for (int i = 0; i < cantidadSolicitudes; i++)
+    {
+        SolicitudAmistad* solicitud = solicitudes[i];
+
+        if (solicitud->estaPendiente())
+        {
+            bool mismaDireccion =
+                solicitud->getEmisor() == emisor &&
+                solicitud->getReceptor() == receptor;
+
+            bool direccionContraria =
+                solicitud->getEmisor() == receptor &&
+                solicitud->getReceptor() == emisor;
+
+            if (mismaDireccion || direccionContraria)
+                return false;
+        }
+    }
+
+    if (cantidadSolicitudes == capacidadSolicitudes)
+        ampliarSolicitudes();
+
+    solicitudes[cantidadSolicitudes] =
+        new SolicitudAmistad(emisor, receptor, fecha);
+
+    cantidadSolicitudes++;
+    return true;
+}
+
+int RedSocial::getCantidadSolicitudes() const
+{
+    return cantidadSolicitudes;
+}
+
+SolicitudAmistad* RedSocial::obtenerSolicitudPorIndice(int indice) const
+{
+    if (indice < 0 || indice >= cantidadSolicitudes)
+        return nullptr;
+
+    return solicitudes[indice];
+}
+
+// Aceptar o rechazar una solicitud por su índice
+bool RedSocial::responderSolicitud(int indice, bool aceptar)
+{
+    SolicitudAmistad* solicitud =
+        obtenerSolicitudPorIndice(indice);
+
+    if (solicitud == nullptr || !solicitud->estaPendiente())
+        return false;
+
+    if (!aceptar)
+    {
+        solicitud->rechazar();
+        return true;
+    }
+
+    Usuario* emisor = solicitud->getEmisor();
+    Usuario* receptor = solicitud->getReceptor();
+
+    if (sonAmigos(emisor->getNombreUsuario(),
+                  receptor->getNombreUsuario()))
+    {
+        solicitud->aceptar();
+        return true;
+    }
+
+    if (cantidadAmistades == capacidadAmistades)
+        ampliarAmistades();
+
+    amigosA[cantidadAmistades] = emisor;
+    amigosB[cantidadAmistades] = receptor;
+    cantidadAmistades++;
+
+    solicitud->aceptar();
+    return true;
+}
+
+// Comprobar si existe una amistad mutua
+bool RedSocial::sonAmigos(const string& nombreA,
+                          const string& nombreB) const
+{
+    Usuario* usuarioA = buscarUsuario(nombreA);
+    Usuario* usuarioB = buscarUsuario(nombreB);
+
+    if (usuarioA == nullptr || usuarioB == nullptr)
+        return false;
+
+    for (int i = 0; i < cantidadAmistades; i++)
+    {
+        bool direccionNormal =
+            amigosA[i] == usuarioA && amigosB[i] == usuarioB;
+
+        bool direccionInversa =
+            amigosA[i] == usuarioB && amigosB[i] == usuarioA;
+
+        if (direccionNormal || direccionInversa)
+            return true;
+    }
+
+    return false;
+}
+
+int RedSocial::getCantidadAmistades() const
+{
+    return cantidadAmistades;
+}
+
+void RedSocial::ampliarMensajes()
+{
+    int nuevaCapacidad = capacidadMensajes * 2;
+    Mensaje** nuevoArreglo = new Mensaje*[nuevaCapacidad];
+
+    for (int i = 0; i < cantidadMensajes; i++)
+        nuevoArreglo[i] = mensajes[i];
+
+    delete[] mensajes;
+    mensajes = nuevoArreglo;
+    capacidadMensajes = nuevaCapacidad;
+}
+
+bool RedSocial::enviarMensaje(
+    const string& nombreEmisor,
+    const string& nombreReceptor,
+    const string& contenido,
+    const string& fecha)
+{
+    Usuario* emisor = buscarUsuario(nombreEmisor);
+    Usuario* receptor = buscarUsuario(nombreReceptor);
+
+    // Ambos usuarios deben existir.
+    if (emisor == nullptr || receptor == nullptr)
+        return false;
+
+    // Un usuario no puede enviarse mensajes a sí mismo.
+    if (emisor == receptor)
+        return false;
+
+    // Solo se permiten mensajes entre amigos.
+    if (!sonAmigos(nombreEmisor, nombreReceptor))
+        return false;
+
+    // El mensaje debe tener contenido y máximo 512 caracteres.
+    if (contenido.empty() || contenido.length() > 512)
+        return false;
+
+    // La fecha es obligatoria.
+    if (fecha.empty())
+        return false;
+
+    // Ampliar el arreglo si no queda espacio.
+    if (cantidadMensajes == capacidadMensajes)
+        ampliarMensajes();
+
+    // Crear el mensaje dinámicamente.
+    Mensaje* nuevoMensaje =
+        new Mensaje(emisor, receptor, contenido, fecha);
+
+    // Validar antes de guardarlo.
+    if (!nuevoMensaje->esValido())
+    {
+        delete nuevoMensaje;
+        return false;
+    }
+
+    mensajes[cantidadMensajes] = nuevoMensaje;
+    cantidadMensajes++;
+
+    return true;
+}
+
+int RedSocial::getCantidadMensajes() const
+{
+    return cantidadMensajes;
+}
+
+Mensaje* RedSocial::obtenerMensajePorIndice(int indice) const
+{
+    if (indice < 0 || indice >= cantidadMensajes)
+        return nullptr;
+
+    return mensajes[indice];
+}
+
+int RedSocial::leerMensajesNoLeidos(
+    const string& nombreUsuario)
+{
+    Usuario* receptor = buscarUsuario(nombreUsuario);
+
+    if (receptor == nullptr)
+        return -1;
+
+    int encontrados = 0;
+
+    for (int i = 0; i < cantidadMensajes; i++)
+    {
+        if (mensajes[i]->getDestinatario() == receptor &&
+            !mensajes[i]->estaLeido())
+        {
+            cout << "De: " << mensajes[i]->getRemitente()->getNombreUsuario() << "\n";
+
+            cout << "Fecha: " << mensajes[i]->getFecha() << "\n";
+
+            cout << "Mensaje: " << mensajes[i]->getContenido() << "\n\n";
+
+            mensajes[i]->marcarLeido();
+            encontrados++;
+        }
+    }
+
+    return encontrados;
+}
+
+int RedSocial::buscarMensajesPorFecha(
+    const string& nombreUsuario,
+    const string& fechaInicio,
+    const string& fechaFin) const
+{
+    Usuario* receptor = buscarUsuario(nombreUsuario);
+
+    if (receptor == nullptr || fechaInicio > fechaFin)
+        return -1;
+
+    int encontrados = 0;
+
+    for (int i = 0; i < cantidadMensajes; i++)
+    {
+        Mensaje* mensaje = mensajes[i];
+
+        if (mensaje->getDestinatario() == receptor &&
+            mensaje->getFecha().substr(0, 10) >= fechaInicio &&
+            mensaje->getFecha().substr(0, 10) <= fechaFin)
+        {
+            cout << "De: " << mensaje->getRemitente()->getNombreUsuario() << "\n";
+
+            cout << "Fecha: " << mensaje->getFecha() << "\n";
+
+            cout << "Mensaje: " << mensaje->getContenido() << "\n\n";
+
+            encontrados++;
+        }
+    }
+
+    return encontrados;
+}
+
+int RedSocial::mostrarMensajesRecibidosOrdenados(
+    const string& nombreUsuario) const
+{
+    Usuario* receptor = buscarUsuario(nombreUsuario);
+
+    if (receptor == nullptr)
+        return -1;
+
+    // Reservar espacio para los mensajes recibidos
+    Mensaje** recibidos = new Mensaje*[cantidadMensajes];
+    int cantidadRecibidos = 0;
+
+    // Buscar los mensajes dirigidos a este usuario
+    for (int i = 0; i < cantidadMensajes; i++)
+    {
+        if (mensajes[i]->getDestinatario() == receptor)
+        {
+            recibidos[cantidadRecibidos] = mensajes[i];
+            cantidadRecibidos++;
+        }
+    }
+
+    // Ordenar por fecha ascendente mediante inserción
+    for (int i = 1; i < cantidadRecibidos; i++)
+    {
+        Mensaje* actual = recibidos[i];
+        int j = i - 1;
+
+        while (j >= 0 && *actual < *recibidos[j])
+        {
+            recibidos[j + 1] = recibidos[j];
+            j--;
+        }
+
+        recibidos[j + 1] = actual;
+    }
+
+    // Mostrar los mensajes del más antiguo al más reciente
+    for (int i = 0; i < cantidadRecibidos; i++)
+    {
+        cout << "De: " << recibidos[i]->getRemitente()->getNombreUsuario() << "\n";
+
+        cout << "Fecha: " << recibidos[i]->getFecha() << "\n";
+
+        cout << "Mensaje: " << recibidos[i]->getContenido() << "\n\n";
+    }
+
+    delete[] recibidos;
+
+    return cantidadRecibidos;
+}
+
+
+int RedSocial::mostrarAlbumesVisibles(
+    const string& nombreVisitante,
+    const string& nombrePropietario) const
+{
+    Usuario* visitante = buscarUsuario(nombreVisitante);
+    Usuario* propietario = buscarUsuario(nombrePropietario);
+
+    if (visitante == nullptr || propietario == nullptr)
+        return -1;
+
+    bool amistad = sonAmigos(nombreVisitante, nombrePropietario);
+    int encontrados = 0;
+
+    cout << "\nAlbumes de " << nombrePropietario << ":\n\n";
+
+    for (int i = 0; i < propietario->getCantidadAlbumes(); i++)
+    {
+        Album* album = propietario->obtenerAlbumPorIndice(i);
+
+        if (album != nullptr &&
+            album->puedeVerlo(visitante, propietario, amistad))
+        {
+            cout << encontrados << ". " << album->getNombre() << " | Fotos: " << album->getCantidadFotos() << '\n';
+
+            encontrados++;
+        }
+    }
+
+    if (encontrados == 0)
+        cout << "No hay albumes visibles.\n";
+
+    return encontrados;
+}
+
+
+Album* RedSocial::obtenerAlbumVisible(
+    const string& nombreVisitante,
+    const string& nombrePropietario,
+    int indiceAlbumVisible) const
+{
+    if (indiceAlbumVisible < 0)
+        return nullptr;
+
+    Usuario* visitante = buscarUsuario(nombreVisitante);
+    Usuario* propietario = buscarUsuario(nombrePropietario);
+
+    if (visitante == nullptr || propietario == nullptr)
+        return nullptr;
+
+    bool amistad = sonAmigos(nombreVisitante, nombrePropietario);
+    int indiceVisible = 0;
+
+    for (int i = 0; i < propietario->getCantidadAlbumes(); i++)
+    {
+        Album* album = propietario->obtenerAlbumPorIndice(i);
+
+        if (album != nullptr &&
+            album->puedeVerlo(visitante, propietario, amistad))
+        {
+            if (indiceVisible == indiceAlbumVisible)
+                return album;
+
+            indiceVisible++;
+        }
+    }
+
+    return nullptr;
+}
+
+
+bool RedSocial::darLikeFoto(
+    const string& nombreVisitante,
+    const string& nombrePropietario,
+    int indiceAlbumVisible,
+    int indiceFoto)
+{
+    Album* album = obtenerAlbumVisible(
+        nombreVisitante,
+        nombrePropietario,
+        indiceAlbumVisible);
+
+    if (album == nullptr)
+        return false;
+
+    Foto* foto = album->obtenerFotoPorIndice(indiceFoto);
+
+    if (foto == nullptr)
+        return false;
+
+    return foto->darLike();
+}
+
+
+bool RedSocial::quitarLikeFoto(
+    const string& nombreVisitante,
+    const string& nombrePropietario,
+    int indiceAlbumVisible,
+    int indiceFoto)
+{
+    Album* album = obtenerAlbumVisible(
+        nombreVisitante,
+        nombrePropietario,
+        indiceAlbumVisible);
+
+    if (album == nullptr)
+        return false;
+
+    Foto* foto = album->obtenerFotoPorIndice(indiceFoto);
+
+    if (foto == nullptr)
+        return false;
+
+    return foto->quitarLike();
+}
+
+int RedSocial::contarAmigosEnComun(
+    const string& nombreUsuario1,
+    const string& nombreUsuario2) const
+{
+    Usuario* usuario1 = buscarUsuario(nombreUsuario1);
+    Usuario* usuario2 = buscarUsuario(nombreUsuario2);
+
+    if (usuario1 == nullptr || usuario2 == nullptr)
+        return -1;
+
+    int comunes = 0;
+
+    for (int i = 0; i < cantidadAmistades; i++)
+    {
+        Usuario* posibleAmigo = nullptr;
+
+        // Buscar un extremo de la amistad que corresponda
+        // al primer usuario.
+        if (amigosA[i] == usuario1)
+            posibleAmigo = amigosB[i];
+        else if (amigosB[i] == usuario1)
+            posibleAmigo = amigosA[i];
+
+        if (posibleAmigo != nullptr)
+        {
+            // Verificar si ese amigo también es amigo del segundo.
+            for (int j = 0; j < cantidadAmistades; j++)
+            {
+                if ((amigosA[j] == usuario2 &&
+                     amigosB[j] == posibleAmigo) ||
+                    (amigosB[j] == usuario2 &&
+                     amigosA[j] == posibleAmigo))
+                {
+                    comunes++;
+                    break;
+                }
+            }
+        }
+    }
+
+    return comunes;
+}
+
+int RedSocial::mostrarAmigos(
+    const string& nombreUsuario) const
+{
+    Usuario* usuario = buscarUsuario(nombreUsuario);
+
+    if (usuario == nullptr)
+    {
+        cout << "El usuario no existe.\n";
+        return -1;
+    }
+
+    int encontrados = 0;
+
+    cout << "\nAmigos de " << nombreUsuario << ":\n";
+
+    for (int i = 0; i < cantidadAmistades; i++)
+    {
+        Usuario* amigo = nullptr;
+
+        if (amigosA[i] == usuario)
+            amigo = amigosB[i];
+        else if (amigosB[i] == usuario)
+            amigo = amigosA[i];
+
+        if (amigo != nullptr)
+        {
+            cout << "- " << amigo->getNombreUsuario() << '\n';
+            encontrados++;
+        }
+    }
+
+    if (encontrados == 0)
+        cout << "Este usuario todavía no tiene amigos.\n";
+
+    cout << "Total de amigos: " << encontrados << '\n';
+
+    return encontrados;
+}
+
+int RedSocial::mostrarSugerencias(
+    const string& nombreUsuario,
+    int cantidadMaxima) const
+{
+    Usuario* usuario = buscarUsuario(nombreUsuario);
+
+    if (usuario == nullptr || cantidadMaxima <= 0)
+    {
+        cout << "No se pueden mostrar las sugerencias.\n";
+        return -1;
+    }
+
+    // Arreglos temporales creados dinámicamente.
+    Usuario** candidatos = new Usuario*[cantidadUsuarios];
+    int* puntuaciones = new int[cantidadUsuarios];
+
+    int cantidadCandidatos = 0;
+
+    // Buscar usuarios que todavía no sean amigos.
+    for (int i = 0; i < cantidadUsuarios; i++)
+    {
+        Usuario* candidato = usuarios[i];
+
+        if (candidato == nullptr || candidato == usuario)
+            continue;
+
+        if (sonAmigos(nombreUsuario, candidato->getNombreUsuario()))
+            continue;
+
+        int comunes = contarAmigosEnComun(
+            nombreUsuario,
+            candidato->getNombreUsuario());
+
+        // Solo sugerir personas con al menos un amigo en común.
+        if (comunes > 0)
+        {
+            candidatos[cantidadCandidatos] = candidato;
+            puntuaciones[cantidadCandidatos] = comunes;
+            cantidadCandidatos++;
+        }
+    }
+
+    // Ordenar por amigos en común, de mayor a menor.
+    for (int i = 1; i < cantidadCandidatos; i++)
+    {
+        Usuario* candidatoActual = candidatos[i];
+        int puntuacionActual = puntuaciones[i];
+        int j = i - 1;
+
+        while (j >= 0 && puntuaciones[j] < puntuacionActual)
+        {
+            candidatos[j + 1] = candidatos[j];
+            puntuaciones[j + 1] = puntuaciones[j];
+            j--;
+        }
+
+        candidatos[j + 1] = candidatoActual;
+        puntuaciones[j + 1] = puntuacionActual;
+    }
+
+    cout << "\nSugerencias de amistad para "
+         << nombreUsuario << ":\n";
+
+    int mostrados = cantidadCandidatos;
+
+    if (mostrados > cantidadMaxima)
+        mostrados = cantidadMaxima;
+
+    for (int i = 0; i < mostrados; i++)
+    {
+        cout << i + 1 << ". "
+             << candidatos[i]->getNombreUsuario()
+             << " | Amigos en comun: "
+             << puntuaciones[i] << '\n';
+    }
+
+    if (mostrados == 0)
+    {
+        cout << "No hay sugerencias con amigos en comun.\n";
+    }
+
+    delete[] candidatos;
+    delete[] puntuaciones;
+
+    return mostrados;
+}
+
+int RedSocial::mostrarTresAmigosAleatorios(
+    const string& nombreUsuario) const
+{
+    Usuario* usuario = buscarUsuario(nombreUsuario);
+
+    if (usuario == nullptr)
+    {
+        cout << "El usuario no existe.\n";
+        return -1;
+    }
+
+    // Contar cuántos amigos tiene el usuario.
+    int totalAmigos = 0;
+
+    for (int i = 0; i < cantidadAmistades; i++)
+    {
+        if (amigosA[i] == usuario || amigosB[i] == usuario)
+            totalAmigos++;
+    }
+
+    if (totalAmigos == 0)
+    {
+        cout << "Este usuario no tiene amigos para mostrar.\n";
+        return 0;
+    }
+
+    // Guardar temporalmente los amigos y sus pesos.
+    Usuario** candidatos = new Usuario*[totalAmigos];
+    int* pesos = new int[totalAmigos];
+    bool* seleccionados = new bool[totalAmigos];
+
+    int posicion = 0;
+
+    for (int i = 0; i < cantidadAmistades; i++)
+    {
+        Usuario* amigo = nullptr;
+
+        if (amigosA[i] == usuario)
+            amigo = amigosB[i];
+        else if (amigosB[i] == usuario)
+            amigo = amigosA[i];
+
+        if (amigo == nullptr)
+            continue;
+
+        candidatos[posicion] = amigo;
+        seleccionados[posicion] = false;
+
+        int comunes = contarAmigosEnComun(
+            nombreUsuario,
+            amigo->getNombreUsuario());
+
+        // Multiplicamos por dos los pesos para usar enteros:
+        // peso 1.0 -> 2
+        // peso 2.5 -> 5
+        // peso 3.5 -> 7
+        if (comunes <= 10)
+            pesos[posicion] = 2;
+        else if (comunes <= 20)
+            pesos[posicion] = 5;
+        else
+            pesos[posicion] = 7;
+
+        posicion++;
+    }
+
+    int cantidadAMostrar = totalAmigos;
+
+    if (cantidadAMostrar > 3)
+        cantidadAMostrar = 3;
+
+    cout << "\nAmigos seleccionados aleatoriamente:\n";
+
+    int mostrados = 0;
+
+    while (mostrados < cantidadAMostrar)
+    {
+        int pesoTotal = 0;
+
+        for (int i = 0; i < totalAmigos; i++)
+        {
+            if (!seleccionados[i])
+                pesoTotal += pesos[i];
+        }
+
+        if (pesoTotal == 0)
+            break;
+
+        int sorteo = rand() % pesoTotal;
+        int acumulado = 0;
+
+        for (int i = 0; i < totalAmigos; i++)
+        {
+            if (seleccionados[i])
+                continue;
+
+            acumulado += pesos[i];
+
+            if (sorteo < acumulado)
+            {
+                seleccionados[i] = true;
+
+                cout << "\nUsuario: "
+                     << candidatos[i]->getNombreUsuario()
+                     << "\nFoto de perfil: "
+                     << candidatos[i]->getRutaFotoPerfil()
+                     << "\nPeso de seleccion: "
+                     << pesos[i] << "\n";
+
+                mostrados++;
+                break;
+            }
+        }
+    }
+
+    delete[] candidatos;
+    delete[] pesos;
+    delete[] seleccionados;
+
+    return mostrados;
+}
+
+void RedSocial::mostrarEstadisticas(int iteraciones) const
+{
+    if (iteraciones < 0)
+        iteraciones = 0;
+
+    unsigned long long memoriaEstimada = 0;
+
+    // Memoria de los arreglos dinámicos de punteros.
+    memoriaEstimada +=
+        static_cast<unsigned long long>(capacidadUsuarios) *
+        sizeof(Usuario*);
+
+    memoriaEstimada +=
+        static_cast<unsigned long long>(capacidadSolicitudes) *
+        sizeof(SolicitudAmistad*);
+
+    memoriaEstimada +=
+        static_cast<unsigned long long>(capacidadAmistades) *
+        sizeof(Usuario*) * 2;
+
+    memoriaEstimada +=
+        static_cast<unsigned long long>(capacidadMensajes) *
+        sizeof(Mensaje*);
+
+    // Tamaño base de los objetos almacenados.
+    for (int i = 0; i < cantidadUsuarios; i++)
+    {
+        if (usuarios[i] != nullptr)
+            memoriaEstimada += sizeof(Usuario);
+    }
+
+    for (int i = 0; i < cantidadSolicitudes; i++)
+    {
+        if (solicitudes[i] != nullptr)
+            memoriaEstimada += sizeof(SolicitudAmistad);
+    }
+
+    for (int i = 0; i < cantidadMensajes; i++)
+    {
+        if (mensajes[i] != nullptr)
+            memoriaEstimada += sizeof(Mensaje);
+    }
+
+    cout << "\n========== ESTADISTICAS ==========\n";
+    cout << "Iteraciones realizadas: " << iteraciones << '\n';
+    cout << "Memoria estimada: "
+         << memoriaEstimada << " bytes\n";
+    cout << "==================================\n";
+}
+
+int RedSocial::mostrarSolicitudesRecibidas(
+    const string& nombreUsuario) const
+{
+    Usuario* usuario = buscarUsuario(nombreUsuario);
+
+    if (usuario == nullptr)
+        return -1;
+
+    int encontrados = 0;
+
+    cout << "\nSolicitudes recibidas pendientes:\n";
+
+    for (int i = 0; i < cantidadSolicitudes; i++)
+    {
+        SolicitudAmistad* solicitud = solicitudes[i];
+
+        if (solicitud->getReceptor() == usuario &&
+            solicitud->estaPendiente())
+        {
+            cout << "Indice: " << i
+                 << " | De: "
+                 << solicitud->getEmisor()->getNombreUsuario()
+                 << " | Fecha: "
+                 << solicitud->getFecha() << '\n';
+
+            encontrados++;
+        }
+    }
+
+    if (encontrados == 0)
+        cout << "No tienes solicitudes pendientes.\n";
+
+    return encontrados;
+}
+
+bool RedSocial::responderSolicitudDeUsuario(
+    const string& nombreUsuario,
+    int indiceSolicitud,
+    bool aceptar)
+{
+    Usuario* usuario = buscarUsuario(nombreUsuario);
+
+    if (usuario == nullptr)
+        return false;
+
+    SolicitudAmistad* solicitud =
+        obtenerSolicitudPorIndice(indiceSolicitud);
+
+    if (solicitud == nullptr)
+        return false;
+
+    if (solicitud->getReceptor() != usuario)
+        return false;
+
+    if (!solicitud->estaPendiente())
+        return false;
+
+    return responderSolicitud(indiceSolicitud, aceptar);
+}
+
+
+C:\Users\user\OneDrive\Documentos\Desafio2-informatica2>(echo === ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\solicitudamistad.cpp ===   & type "C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\solicitudamistad.cpp"   & echo.) 
+=== ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\solicitudamistad.cpp === 
+#include "solicitudamistad.h"
+#include "usuario.h"
+
+SolicitudAmistad::SolicitudAmistad(
+    Usuario* quienEnvia,
+    Usuario* quienRecibe,
+    const string& fechaSolicitud)
+{
+    emisor = quienEnvia;
+    receptor = quienRecibe;
+    fecha = fechaSolicitud;
+    estado = 0;
+}
+
+SolicitudAmistad::SolicitudAmistad(
+    const SolicitudAmistad& otra)
+{
+    emisor = otra.emisor;
+    receptor = otra.receptor;
+    fecha = otra.fecha;
+    estado = otra.estado;
+}
+
+Usuario* SolicitudAmistad::getEmisor() const
+{
+    return emisor;
+}
+
+Usuario* SolicitudAmistad::getReceptor() const
+{
+    return receptor;
+}
+
+string SolicitudAmistad::getFecha() const
+{
+    return fecha;
+}
+
+int SolicitudAmistad::getEstado() const
+{
+    return estado;
+}
+
+void SolicitudAmistad::aceptar()
+{
+    if (estado == 0)
+        estado = 1;
+}
+
+void SolicitudAmistad::rechazar()
+{
+    if (estado == 0)
+        estado = 2;
+}
+
+bool SolicitudAmistad::estaPendiente() const
+{
+    return estado == 0;
+}
+
+C:\Users\user\OneDrive\Documentos\Desafio2-informatica2>(echo === ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\solicitudes.cpp ===   & type "C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\solicitudes.cpp"   & echo.) 
+=== ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\solicitudes.cpp === 
+#include "solicitudamistad.h"
+#include "usuario.h"
+
+SolicitudAmistad::SolicitudAmistad(
+    Usuario* quienEnvia,
+    Usuario* quienRecibe,
+    const std::string& fechaSolicitud)
+{
+    emisor = quienEnvia;
+    receptor = quienRecibe;
+    fecha = fechaSolicitud;
+    estado = 0;
+}
+
+SolicitudAmistad::SolicitudAmistad(
+    const SolicitudAmistad& otra)
+{
+    emisor = otra.emisor;
+    receptor = otra.receptor;
+    fecha = otra.fecha;
+    estado = otra.estado;
+}
+
+Usuario* SolicitudAmistad::getEmisor() const
+{
+    return emisor;
+}
+
+Usuario* SolicitudAmistad::getReceptor() const
+{
+    return receptor;
+}
+
+std::string SolicitudAmistad::getFecha() const
+{
+    return fecha;
+}
+
+int SolicitudAmistad::getEstado() const
+{
+    return estado;
+}
+
+void SolicitudAmistad::aceptar()
+{
+    if (estado == 0)
+        estado = 1;
+}
+
+void SolicitudAmistad::rechazar()
+{
+    if (estado == 0)
+        estado = 2;
+}
+
+bool SolicitudAmistad::estaPendiente() const
+{
+    return estado == 0;
+}
+
+C:\Users\user\OneDrive\Documentos\Desafio2-informatica2>(echo === ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\usuario.cpp ===   & type "C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\usuario.cpp"   & echo.) 
+=== ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\usuario.cpp === 
+
+#include "usuario.h"
+#include "album.h"
+
+using namespace std;
+
+// Constructor por defecto
+Usuario::Usuario()
+    : nombreUsuario(""),
+    fechaNacimiento(""),
+    correo(""),
+    rutaFotoPerfil(""),
+    contraseña(""),
+    ciudad(""),
+    pais(""),
+    fechaInscripcion(""),
+    albumes(nullptr),
+    cantidadAlbumes(0),
+    capacidadAlbumes(0)
+{
+}
+
+// Constructor basico
+Usuario::Usuario(const string& nombre, const string& clave)
+    : nombreUsuario(nombre),
+    fechaNacimiento(""),
+    correo(""),
+    rutaFotoPerfil(""),
+    contraseña(clave),
+    ciudad(""),
+    pais(""),
+    fechaInscripcion(""),
+    albumes(nullptr),
+    cantidadAlbumes(0),
+    capacidadAlbumes(0)
+{
+}
+
+// Constructor completo
+Usuario::Usuario(const string& nombre,
+                 const string& nacimiento,
+                 const string& email,
+                 const string& rutaPerfil,
+                 const string& clave,
+                 const string& ciudadUsuario,
+                 const string& paisUsuario,
+                 const string& inscripcion)
+    : nombreUsuario(nombre),
+    fechaNacimiento(nacimiento),
+    correo(email),
+    rutaFotoPerfil(rutaPerfil),
+    contraseña(clave),
+    ciudad(ciudadUsuario),
+    pais(paisUsuario),
+    fechaInscripcion(inscripcion),
+    albumes(nullptr),
+    cantidadAlbumes(0),
+    capacidadAlbumes(0)
+{
+}
+
+// Constructor de copia
+Usuario::Usuario(const Usuario& otro)
+    : nombreUsuario(otro.nombreUsuario),
+    fechaNacimiento(otro.fechaNacimiento),
+    correo(otro.correo),
+    rutaFotoPerfil(otro.rutaFotoPerfil),
+    contraseña(otro.contraseña),
+    ciudad(otro.ciudad),
+    pais(otro.pais),
+    fechaInscripcion(otro.fechaInscripcion),
+    albumes(nullptr),
+    cantidadAlbumes(0),
+    capacidadAlbumes(0)
+{
+    if (otro.cantidadAlbumes > 0)
+    {
+        albumes = new Album*[otro.cantidadAlbumes];
+        capacidadAlbumes = otro.cantidadAlbumes;
+
+        try
+        {
+            for (int i = 0; i < otro.cantidadAlbumes; i++)
+            {
+                albumes[i] = new Album(*otro.albumes[i]);
+                cantidadAlbumes++;
+            }
+        }
+        catch (...)
+        {
+            for (int i = 0; i < cantidadAlbumes; i++)
+                delete albumes[i];
+
+            delete[] albumes;
+            throw;
+        }
+    }
+}
+
+// Destructor
+Usuario::~Usuario()
+{
+    for (int i = 0; i < cantidadAlbumes; i++)
+        delete albumes[i];
+
+    delete[] albumes;
+}
+
+// Operador de asignacion
+Usuario& Usuario::operator=(const Usuario& otro)
+{
+    if (this == &otro)
+        return *this;
+
+    // Preparar las copias antes de modificar el usuario actual
+    Album** nuevosAlbumes = nullptr;
+    int nuevosAlbumesCopiados = 0;
+    int nuevaCapacidad = otro.cantidadAlbumes;
+
+    if (nuevaCapacidad > 0)
+    {
+        nuevosAlbumes = new Album*[nuevaCapacidad];
+
+        try
+        {
+            for (int i = 0; i < otro.cantidadAlbumes; i++)
+            {
+                nuevosAlbumes[i] = new Album(*otro.albumes[i]);
+                nuevosAlbumesCopiados++;
+            }
+        }
+        catch (...)
+        {
+            for (int i = 0; i < nuevosAlbumesCopiados; i++)
+                delete nuevosAlbumes[i];
+
+            delete[] nuevosAlbumes;
+            throw;
+        }
+    }
+
+    // Liberar los albumes anteriores
+    for (int i = 0; i < cantidadAlbumes; i++)
+        delete albumes[i];
+
+    delete[] albumes;
+
+    // Copiar los datos del usuario
+    nombreUsuario = otro.nombreUsuario;
+    fechaNacimiento = otro.fechaNacimiento;
+    correo = otro.correo;
+    rutaFotoPerfil = otro.rutaFotoPerfil;
+    contraseña = otro.contraseña;
+    ciudad = otro.ciudad;
+    pais = otro.pais;
+    fechaInscripcion = otro.fechaInscripcion;
+
+    // Instalar el nuevo arreglo
+    albumes = nuevosAlbumes;
+    cantidadAlbumes = nuevosAlbumesCopiados;
+    capacidadAlbumes = nuevaCapacidad;
+
+    return *this;
+}
+
+// Getters
+string Usuario::getNombreUsuario() const
+{
+    return nombreUsuario;
+}
+
+string Usuario::getFechaNacimiento() const
+{
+    return fechaNacimiento;
+}
+
+string Usuario::getCorreo() const
+{
+    return correo;
+}
+
+string Usuario::getRutaFotoPerfil() const
+{
+    return rutaFotoPerfil;
+}
+
+string Usuario::getContraseña() const
+{
+    return contraseña;
+}
+
+string Usuario::getCiudad() const
+{
+    return ciudad;
+}
+
+string Usuario::getPais() const
+{
+    return pais;
+}
+
+string Usuario::getFechaInscripcion() const
+{
+    return fechaInscripcion;
+}
+
+// Verificacion de contraseña
+bool Usuario::verificarContraseña(const string& clave) const
+{
+    return contraseña == clave;
+}
+
+// Setters
+void Usuario::setFechaNacimiento(const string& fecha)
+{
+    fechaNacimiento = fecha;
+}
+
+void Usuario::setCorreo(const string& email)
+{
+    correo = email;
+}
+
+void Usuario::setRutaFotoPerfil(const string& ruta)
+{
+    rutaFotoPerfil = ruta;
+}
+
+void Usuario::setContraseña(const string& clave)
+{
+    contraseña = clave;
+}
+
+void Usuario::setCiudad(const string& ciudadUsuario)
+{
+    ciudad = ciudadUsuario;
+}
+
+void Usuario::setPais(const string& paisUsuario)
+{
+    pais = paisUsuario;
+}
+
+void Usuario::setFechaInscripcion(const string& fecha)
+{
+    fechaInscripcion = fecha;
+}
+
+// Ampliar capacidad del arreglo dinamico de albumes
+void Usuario::ampliarCapacidadAlbumes()
+{
+    int nuevaCapacidad;
+
+    if (capacidadAlbumes == 0)
+        nuevaCapacidad = 2;
+    else
+        nuevaCapacidad = capacidadAlbumes * 2;
+
+    Album** nuevoArreglo = new Album*[nuevaCapacidad];
+
+    for (int i = 0; i < cantidadAlbumes; i++)
+        nuevoArreglo[i] = albumes[i];
+
+    delete[] albumes;
+
+    albumes = nuevoArreglo;
+    capacidadAlbumes = nuevaCapacidad;
+}
+
+// Agregar un album
+bool Usuario::agregarAlbum(const Album& album)
+{
+    if (album.getNombre().empty() || album.getRuta().empty())
+        return false;
+
+    if (album.getPrivacidad() < 0 || album.getPrivacidad() > 2)
+        return false;
+
+    if (cantidadAlbumes == capacidadAlbumes)
+        ampliarCapacidadAlbumes();
+
+    albumes[cantidadAlbumes] = new Album(album);
+    cantidadAlbumes++;
+
+    return true;
+}
+
+// Obtener cantidad de albumes
+int Usuario::getCantidadAlbumes() const
+{
+    return cantidadAlbumes;
+}
+
+// Obtener album por indice
+Album* Usuario::obtenerAlbumPorIndice(int indice) const
+{
+    if (indice < 0 || indice >= cantidadAlbumes)
+        return nullptr;
+
+    return albumes[indice];
+}
+
+
+C:\Users\user\OneDrive\Documentos\Desafio2-informatica2>(echo === ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\album.h ===   & type "C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\album.h"   & echo.) 
+=== ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\album.h === 
+
+#ifndef ALBUM_H
+#define ALBUM_H
+
+#include <string>
+#include "foto.h"
+
+class Usuario;
+
+class Album
+{
+private:
+    std::string nombre;
+    std::string ruta;
+    int privacidad;
+
+    Foto** fotos;
+    int cantidadFotos;
+    int capacidadFotos;
+
+    void ampliarCapacidad();
+
+public:
+    Album(const std::string& nombreAlbum,
+          const std::string& rutaAlbum,
+          int nivelPrivacidad);
+
+    Album(const Album& otro);
+    ~Album();
+
+    std::string getNombre() const;
+    std::string getRuta() const;
+    int getPrivacidad() const;
+    int getCantidadFotos() const;
+    Foto* obtenerFotoPorIndice(int indice) const;
+
+    bool esPublico() const;
+    bool esSoloAmigos() const;
+    bool esPrivado() const;
+
+    bool puedeVerlo(const Usuario* visitante,
+                    const Usuario* propietario,
+                    bool sonAmigos) const;
+
+    bool agregarFoto(const Foto& foto);
+
+    Album& operator=(const Album& otro);
+};
+
+#endif
+
+
+C:\Users\user\OneDrive\Documentos\Desafio2-informatica2>(echo === ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\almacenamiento.h ===   & type "C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\almacenamiento.h"   & echo.) 
+=== ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\almacenamiento.h === 
+#ifndef ALMACENAMIENTO_H
+#define ALMACENAMIENTO_H
+
+#include <string>
+
+using namespace std;
+
+class RedSocial;
+
+class Almacenamiento
+{
+public:
+    bool guardarUsuarios(const RedSocial& red, const string& rutaArchivo);
+
+    bool cargarUsuarios(RedSocial& red, const string& rutaArchivo);
+};
+
+#endif
+
+C:\Users\user\OneDrive\Documentos\Desafio2-informatica2>(echo === ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\foto.h ===   & type "C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\foto.h"   & echo.) 
+=== ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\foto.h === 
+#ifndef FOTO_H
+#define FOTO_H
+
+#include <string>
+
+using namespace std;
+
+class Foto
+{
+private:
+    string fechaCaptura;
+    unsigned long long tamanoBytes;
+    string ruta;
+    int cantidadLikes;
+
+public:
+    // Constructor
+    Foto(const string& fecha,
+         unsigned long long tamano,
+         const string& rutaArchivo,
+         int likes = 0);
+
+    // Constructor de copia
+    Foto(const Foto& otra);
+
+    // Getters
+    string getFechaCaptura() const;
+    unsigned long long getTamanoBytes() const;
+    string getRuta() const;
+    int getCantidadLikes() const;
+
+    // Gestion de likes
+    bool darLike();
+    bool quitarLike();
+
+    // Validacion
+    bool esValida() const;
+
+    // Sobrecarga de operadores
+    bool operator<(const Foto& otra) const;
+};
+
+#endif
+
+
+C:\Users\user\OneDrive\Documentos\Desafio2-informatica2>(echo === ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\mensaje.h ===   & type "C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\mensaje.h"   & echo.) 
+=== ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\mensaje.h === 
+#ifndef MENSAJE_H
+#define MENSAJE_H
+
+#include <string>
+
+using namespace std;
+
+class Usuario;
+
+class Mensaje
+{
+private:
+    Usuario* remitente;
+    Usuario* destinatario;
+    string contenido;
+    string fecha;
+    bool leido;
+
+public:
+    Mensaje(Usuario* quienEnvia,
+            Usuario* quienRecibe,
+            const string& texto,
+            const string& fechaMensaje);
+
+    Mensaje(const Mensaje& otro);
+
+    Usuario* getRemitente() const;
+    Usuario* getDestinatario() const;
+    string getContenido() const;
+    string getFecha() const;
+    bool estaLeido() const;
+
+    bool marcarLeido();
+    bool esValido() const;
+
+    // Sobrecarga: permite comparar mensajes por fecha
+    bool operator<(const Mensaje& otro) const;
+};
+
+#endif
+
+C:\Users\user\OneDrive\Documentos\Desafio2-informatica2>(echo === ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\redsocial.h ===   & type "C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\redsocial.h"   & echo.) 
+=== ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\redsocial.h === 
+
+#ifndef REDSOCIAL_H
+#define REDSOCIAL_H
+
+#include <string>
+#include "usuario.h"
+#include "solicitudamistad.h"
+#include "mensaje.h"
+#include "album.h"
+
+class RedSocial
+{
+private:
+    // Usuarios
+    Usuario** usuarios;
+    int cantidadUsuarios;
+    int capacidadUsuarios;
+
+    // Solicitudes de amistad
+    SolicitudAmistad** solicitudes;
+    int cantidadSolicitudes;
+    int capacidadSolicitudes;
+
+    // Amistades mutuas
+    Usuario** amigosA;
+    Usuario** amigosB;
+    int cantidadAmistades;
+    int capacidadAmistades;
+
+    void ampliarCapacidad();
+    void ampliarSolicitudes();
+    void ampliarAmistades();
+
+    // Mensajes
+    Mensaje** mensajes;
+    int cantidadMensajes;
+    int capacidadMensajes;
+
+    void ampliarMensajes();
+
+public:
+    RedSocial();
+    ~RedSocial();
+
+    RedSocial(const RedSocial&) = delete;
+    RedSocial& operator=(const RedSocial&) = delete;
+
+    // Usuarios
+    bool agregarUsuario(const string& nombre, const string& clave);
+
+    bool agregarUsuario(const string& nombre,
+                        const string& nacimiento,
+                        const string& correo,
+                        const string& rutaFoto,
+                        const string& clave,
+                        const string& ciudad,
+                        const string& pais,
+                        const string& inscripcion);
+
+    Usuario* buscarUsuario(const string& nombre) const;
+    Usuario* obtenerUsuarioPorIndice(int indice) const;
+    int getCantidadUsuarios() const;
+
+    // Solicitudes
+    bool enviarSolicitud(const string& nombreEmisor, const string& nombreReceptor, const string& fecha);
+
+    int getCantidadSolicitudes() const;
+
+    SolicitudAmistad* obtenerSolicitudPorIndice(int indice) const;
+
+    bool responderSolicitud(int indice, bool aceptar);
+
+    // Amistades
+    bool sonAmigos(const string& nombreA, const string& nombreB) const;
+
+    int getCantidadAmistades() const;
+
+    // Mensajes
+    bool enviarMensaje(const string& nombreEmisor, const string& nombreReceptor,
+                       const string& contenido, const string& fecha);
+
+    int getCantidadMensajes() const;
+
+    Mensaje* obtenerMensajePorIndice(int indice) const;
+
+    int leerMensajesNoLeidos(const string& nombreUsuario);
+
+    int buscarMensajesPorFecha(const string& nombreUsuario, const string& fechaInicio, const string& fechaFin) const;
+
+    int mostrarMensajesRecibidosOrdenados(
+        const string& nombreUsuario) const;
+
+    // Albumes y fotos
+    int mostrarAlbumesVisibles(
+        const string& nombreVisitante,
+        const string& nombrePropietario) const;
+
+    Album* obtenerAlbumVisible(
+        const string& nombreVisitante,
+        const string& nombrePropietario,
+        int indiceAlbumVisible) const;
+
+    bool darLikeFoto(
+        const string& nombreVisitante,
+        const string& nombrePropietario,
+        int indiceAlbumVisible,
+        int indiceFoto);
+
+    bool quitarLikeFoto(
+        const string& nombreVisitante,
+        const string& nombrePropietario,
+        int indiceAlbumVisible,
+        int indiceFoto);
+
+    int contarAmigosEnComun(
+        const string& nombreUsuario1,
+        const string& nombreUsuario2) const;
+
+    int mostrarAmigos(const string& nombreUsuario) const;
+
+    int mostrarSugerencias(
+        const string& nombreUsuario,
+        int cantidadMaxima) const;
+
+    int mostrarTresAmigosAleatorios(
+        const string& nombreUsuario) const;
+
+    void mostrarEstadisticas(int iteraciones) const;
+
+    int mostrarSolicitudesRecibidas(
+        const string& nombreUsuario) const;
+
+    bool responderSolicitudDeUsuario(
+        const string& nombreUsuario,
+        int indiceSolicitud,
+        bool aceptar);
+};
+
+#endif
+
+
+C:\Users\user\OneDrive\Documentos\Desafio2-informatica2>(echo === ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\solicitudamistad.h ===   & type "C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\solicitudamistad.h"   & echo.) 
+=== ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\solicitudamistad.h === 
+#ifndef SOLICITUDAMISTAD_H
+#define SOLICITUDAMISTAD_H
+
+#include <string>
+
+using namespace std;
+
+class Usuario;
+
+class SolicitudAmistad
+{
+private:
+    Usuario* emisor;
+    Usuario* receptor;
+    string fecha;
+    int estado; // 0: pendiente, 1: aceptada, 2: rechazada
+
+public:
+    SolicitudAmistad(Usuario* quienEnvia, Usuario* quienRecibe, const string& fechaSolicitud);
+
+    SolicitudAmistad(const SolicitudAmistad& otra);
+
+    Usuario* getEmisor() const;
+    Usuario* getReceptor() const;
+    string getFecha() const;
+    int getEstado() const;
+
+    void aceptar();
+    void rechazar();
+    bool estaPendiente() const;
+};
+
+#endif
+
+C:\Users\user\OneDrive\Documentos\Desafio2-informatica2>(echo === ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\solicitudes.h ===   & type "C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\solicitudes.h"   & echo.) 
+=== ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\solicitudes.h === 
+#ifndef SOLICITUDAMISTAD_H
+#define SOLICITUDAMISTAD_H
+
+#include <string>
+
+using namespace std;
+
+class Usuario;
+
+class SolicitudAmistad
+{
+private:
+    Usuario* emisor;
+    Usuario* receptor;
+    string fecha;
+    int estado; // 0: pendiente, 1: aceptada, 2: rechazada
+
+public:
+    SolicitudAmistad(Usuario* quienEnvia, Usuario* quienRecibe, const std::string& fechaSolicitud);
+
+    SolicitudAmistad(const SolicitudAmistad& otra);
+
+    Usuario* getEmisor() const;
+    Usuario* getReceptor() const;
+    string getFecha() const;
+    int getEstado() const;
+
+    void aceptar();
+    void rechazar();
+    bool estaPendiente() const;
+};
+
+#endif
+
+C:\Users\user\OneDrive\Documentos\Desafio2-informatica2>(echo === ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\usuario.h ===   & type "C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\usuario.h"   & echo.) 
+=== ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\usuario.h === 
+#ifndef USUARIO_H
+#define USUARIO_H
+
+#include <string>
+
+using namespace std;
+
+class Album;
+
+class Usuario
+{
+private:
+    string nombreUsuario;
+    string fechaNacimiento;
+    string correo;
+    string rutaFotoPerfil;
+    string contraseña;
+    string ciudad;
+    string pais;
+    string fechaInscripcion;
+
+    // Arreglo dinamico de albumes del usuario
+    Album** albumes;
+    int cantidadAlbumes;
+    int capacidadAlbumes;
+
+    void ampliarCapacidadAlbumes();
+
+public:
+    // Constructores
+    Usuario();
+
+    Usuario(const string& nombre, const string& clave);
+
+    Usuario(const string& nombre,
+            const string& nacimiento,
+            const string& email,
+            const string& rutaPerfil,
+            const string& clave,
+            const string& ciudadUsuario,
+            const string& paisUsuario,
+            const string& inscripcion);
+
+    Usuario(const Usuario& otro);
+
+    // Destructor
+    ~Usuario();
+
+    // Operador de asignacion
+    Usuario& operator=(const Usuario& otro);
+
+    // Getters
+    string getNombreUsuario() const;
+    string getFechaNacimiento() const;
+    string getCorreo() const;
+    string getRutaFotoPerfil() const;
+    string getContraseña() const;
+    string getCiudad() const;
+    string getPais() const;
+    string getFechaInscripcion() const;
+
+    // Verificacion de credenciales
+    bool verificarContraseña(const string& clave) const;
+
+    // Setters
+    void setFechaNacimiento(const string& fecha);
+    void setCorreo(const string& email);
+    void setRutaFotoPerfil(const string& ruta);
+    void setContraseña(const string& clave);
+    void setCiudad(const string& ciudadUsuario);
+    void setPais(const string& paisUsuario);
+    void setFechaInscripcion(const string& fecha);
+
+    // Gestion de albumes
+    bool agregarAlbum(const Album& album);
+    int getCantidadAlbumes() const;
+    Album* obtenerAlbumPorIndice(int indice) const;
+};
+
+#endif
+
+
+C:\Users\user\OneDrive\Documentos\Desafio2-informatica2>(echo === ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\build\Desktop_Qt_6_11_2_MinGW_64_bit_Debug\CMakeFiles\3.30.5\CompilerIdCXX\CMakeCXXCompilerId.cpp ===   & type "C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\build\Desktop_Qt_6_11_2_MinGW_64_bit_Debug\CMakeFiles\3.30.5\CompilerIdCXX\CMakeCXXCompilerId.cpp"   & echo.. ) 
+=== ARCHIVO: C:\Users\user\OneDrive\Documentos\Desafio2-informatica2\build\Desktop_Qt_6_11_2_MinGW_64_bit_Debug\CMakeFiles\3.30.5\CompilerIdCXX\CMakeCXXCompilerId.cpp === 
+/* This source file must have a .cpp extension so that all C++ compilers
+   recognize the extension without flags.  Borland does not know .cxx for
+   example.  */
+#ifndef __cplusplus
+# error "A C compiler has been selected for C++."
+#endif
+
+#if !defined(__has_include)
+/* If the compiler does not have __has_include, pretend the answer is
+   always no.  */
+#  define __has_include(x) 0
+#endif
+
+
+/* Version number components: V=Version, R=Revision, P=Patch
+   Version date components:   YYYY=Year, MM=Month,   DD=Day  */
+
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+# define COMPILER_ID "Intel"
+# if defined(_MSC_VER)
+#  define SIMULATE_ID "MSVC"
+# endif
+# if defined(__GNUC__)
+#  define SIMULATE_ID "GNU"
+# endif
+  /* __INTEL_COMPILER = VRP prior to 2021, and then VVVV for 2021 and later,
+     except that a few beta releases use the old format with V=2021.  */
+# if __INTEL_COMPILER < 2021 || __INTEL_COMPILER == 202110 || __INTEL_COMPILER == 202111
+#  define COMPILER_VERSION_MAJOR DEC(__INTEL_COMPILER/100)
+#  define COMPILER_VERSION_MINOR DEC(__INTEL_COMPILER/10 % 10)
+#  if defined(__INTEL_COMPILER_UPDATE)
+#   define COMPILER_VERSION_PATCH DEC(__INTEL_COMPILER_UPDATE)
+#  else
+#   define COMPILER_VERSION_PATCH DEC(__INTEL_COMPILER   % 10)
+#  endif
+# else
+#  define COMPILER_VERSION_MAJOR DEC(__INTEL_COMPILER)
+#  define COMPILER_VERSION_MINOR DEC(__INTEL_COMPILER_UPDATE)
+   /* The third version component from --version is an update index,
+      but no macro is provided for it.  */
+#  define COMPILER_VERSION_PATCH DEC(0)
+# endif
+# if defined(__INTEL_COMPILER_BUILD_DATE)
+   /* __INTEL_COMPILER_BUILD_DATE = YYYYMMDD */
+#  define COMPILER_VERSION_TWEAK DEC(__INTEL_COMPILER_BUILD_DATE)
+# endif
+# if defined(_MSC_VER)
+   /* _MSC_VER = VVRR */
+#  define SIMULATE_VERSION_MAJOR DEC(_MSC_VER / 100)
+#  define SIMULATE_VERSION_MINOR DEC(_MSC_VER % 100)
+# endif
+# if defined(__GNUC__)
+#  define SIMULATE_VERSION_MAJOR DEC(__GNUC__)
+# elif defined(__GNUG__)
+#  define SIMULATE_VERSION_MAJOR DEC(__GNUG__)
+# endif
+# if defined(__GNUC_MINOR__)
+#  define SIMULATE_VERSION_MINOR DEC(__GNUC_MINOR__)
+# endif
+# if defined(__GNUC_PATCHLEVEL__)
+#  define SIMULATE_VERSION_PATCH DEC(__GNUC_PATCHLEVEL__)
+# endif
+
+#elif (defined(__clang__) && defined(__INTEL_CLANG_COMPILER)) || defined(__INTEL_LLVM_COMPILER)
+# define COMPILER_ID "IntelLLVM"
+#if defined(_MSC_VER)
+# define SIMULATE_ID "MSVC"
+#endif
+#if defined(__GNUC__)
+# define SIMULATE_ID "GNU"
+#endif
+/* __INTEL_LLVM_COMPILER = VVVVRP prior to 2021.2.0, VVVVRRPP for 2021.2.0 and
+ * later.  Look for 6 digit vs. 8 digit version number to decide encoding.
+ * VVVV is no smaller than the current year when a version is released.
+ */
+#if __INTEL_LLVM_COMPILER < 1000000L
+# define COMPILER_VERSION_MAJOR DEC(__INTEL_LLVM_COMPILER/100)
+# define COMPILER_VERSION_MINOR DEC(__INTEL_LLVM_COMPILER/10 % 10)
+# define COMPILER_VERSION_PATCH DEC(__INTEL_LLVM_COMPILER    % 10)
+#else
+# define COMPILER_VERSION_MAJOR DEC(__INTEL_LLVM_COMPILER/10000)
+# define COMPILER_VERSION_MINOR DEC(__INTEL_LLVM_COMPILER/100 % 100)
+# define COMPILER_VERSION_PATCH DEC(__INTEL_LLVM_COMPILER     % 100)
+#endif
+#if defined(_MSC_VER)
+  /* _MSC_VER = VVRR */
+# define SIMULATE_VERSION_MAJOR DEC(_MSC_VER / 100)
+# define SIMULATE_VERSION_MINOR DEC(_MSC_VER % 100)
+#endif
+#if defined(__GNUC__)
+# define SIMULATE_VERSION_MAJOR DEC(__GNUC__)
+#elif defined(__GNUG__)
+# define SIMULATE_VERSION_MAJOR DEC(__GNUG__)
+#endif
+#if defined(__GNUC_MINOR__)
+# define SIMULATE_VERSION_MINOR DEC(__GNUC_MINOR__)
+#endif
+#if defined(__GNUC_PATCHLEVEL__)
+# define SIMULATE_VERSION_PATCH DEC(__GNUC_PATCHLEVEL__)
+#endif
+
+#elif defined(__PATHCC__)
+# define COMPILER_ID "PathScale"
+# define COMPILER_VERSION_MAJOR DEC(__PATHCC__)
+# define COMPILER_VERSION_MINOR DEC(__PATHCC_MINOR__)
+# if defined(__PATHCC_PATCHLEVEL__)
+#  define COMPILER_VERSION_PATCH DEC(__PATHCC_PATCHLEVEL__)
+# endif
+
+#elif defined(__BORLANDC__) && defined(__CODEGEARC_VERSION__)
+# define COMPILER_ID "Embarcadero"
+# define COMPILER_VERSION_MAJOR HEX(__CODEGEARC_VERSION__>>24 & 0x00FF)
+# define COMPILER_VERSION_MINOR HEX(__CODEGEARC_VERSION__>>16 & 0x00FF)
+# define COMPILER_VERSION_PATCH DEC(__CODEGEARC_VERSION__     & 0xFFFF)
+
+#elif defined(__BORLANDC__)
+# define COMPILER_ID "Borland"
+  /* __BORLANDC__ = 0xVRR */
+# define COMPILER_VERSION_MAJOR HEX(__BORLANDC__>>8)
+# define COMPILER_VERSION_MINOR HEX(__BORLANDC__ & 0xFF)
+
+#elif defined(__WATCOMC__) && __WATCOMC__ < 1200
+# define COMPILER_ID "Watcom"
+   /* __WATCOMC__ = VVRR */
+# define COMPILER_VERSION_MAJOR DEC(__WATCOMC__ / 100)
+# define COMPILER_VERSION_MINOR DEC((__WATCOMC__ / 10) % 10)
+# if (__WATCOMC__ % 10) > 0
+#  define COMPILER_VERSION_PATCH DEC(__WATCOMC__ % 10)
+# endif
+
+#elif defined(__WATCOMC__)
+# define COMPILER_ID "OpenWatcom"
+   /* __WATCOMC__ = VVRP + 1100 */
+# define COMPILER_VERSION_MAJOR DEC((__WATCOMC__ - 1100) / 100)
+# define COMPILER_VERSION_MINOR DEC((__WATCOMC__ / 10) % 10)
+# if (__WATCOMC__ % 10) > 0
+#  define COMPILER_VERSION_PATCH DEC(__WATCOMC__ % 10)
+# endif
+
+#elif defined(__SUNPRO_CC)
+# define COMPILER_ID "SunPro"
+# if __SUNPRO_CC >= 0x5100
+   /* __SUNPRO_CC = 0xVRRP */
+#  define COMPILER_VERSION_MAJOR HEX(__SUNPRO_CC>>12)
+#  define COMPILER_VERSION_MINOR HEX(__SUNPRO_CC>>4 & 0xFF)
+#  define COMPILER_VERSION_PATCH HEX(__SUNPRO_CC    & 0xF)
+# else
+   /* __SUNPRO_CC = 0xVRP */
+#  define COMPILER_VERSION_MAJOR HEX(__SUNPRO_CC>>8)
+#  define COMPILER_VERSION_MINOR HEX(__SUNPRO_CC>>4 & 0xF)
+#  define COMPILER_VERSION_PATCH HEX(__SUNPRO_CC    & 0xF)
+# endif
+
+#elif defined(__HP_aCC)
+# define COMPILER_ID "HP"
+  /* __HP_aCC = VVRRPP */
+# define COMPILER_VERSION_MAJOR DEC(__HP_aCC/10000)
+# define COMPILER_VERSION_MINOR DEC(__HP_aCC/100 % 100)
+# define COMPILER_VERSION_PATCH DEC(__HP_aCC     % 100)
+
+#elif defined(__DECCXX)
+# define COMPILER_ID "Compaq"
+  /* __DECCXX_VER = VVRRTPPPP */
+# define COMPILER_VERSION_MAJOR DEC(__DECCXX_VER/10000000)
+# define COMPILER_VERSION_MINOR DEC(__DECCXX_VER/100000  % 100)
+# define COMPILER_VERSION_PATCH DEC(__DECCXX_VER         % 10000)
+
+#elif defined(__IBMCPP__) && defined(__COMPILER_VER__)
+# define COMPILER_ID "zOS"
+  /* __IBMCPP__ = VRP */
+# define COMPILER_VERSION_MAJOR DEC(__IBMCPP__/100)
+# define COMPILER_VERSION_MINOR DEC(__IBMCPP__/10 % 10)
+# define COMPILER_VERSION_PATCH DEC(__IBMCPP__    % 10)
+
+#elif defined(__open_xl__) && defined(__clang__)
+# define COMPILER_ID "IBMClang"
+# define COMPILER_VERSION_MAJOR DEC(__open_xl_version__)
+# define COMPILER_VERSION_MINOR DEC(__open_xl_release__)
+# define COMPILER_VERSION_PATCH DEC(__open_xl_modification__)
+# define COMPILER_VERSION_TWEAK DEC(__open_xl_ptf_fix_level__)
+
+
+#elif defined(__ibmxl__) && defined(__clang__)
+# define COMPILER_ID "XLClang"
+# define COMPILER_VERSION_MAJOR DEC(__ibmxl_version__)
+# define COMPILER_VERSION_MINOR DEC(__ibmxl_release__)
+# define COMPILER_VERSION_PATCH DEC(__ibmxl_modification__)
+# define COMPILER_VERSION_TWEAK DEC(__ibmxl_ptf_fix_level__)
+
+
+#elif defined(__IBMCPP__) && !defined(__COMPILER_VER__) && __IBMCPP__ >= 800
+# define COMPILER_ID "XL"
+  /* __IBMCPP__ = VRP */
+# define COMPILER_VERSION_MAJOR DEC(__IBMCPP__/100)
+# define COMPILER_VERSION_MINOR DEC(__IBMCPP__/10 % 10)
+# define COMPILER_VERSION_PATCH DEC(__IBMCPP__    % 10)
+
+#elif defined(__IBMCPP__) && !defined(__COMPILER_VER__) && __IBMCPP__ < 800
+# define COMPILER_ID "VisualAge"
+  /* __IBMCPP__ = VRP */
+# define COMPILER_VERSION_MAJOR DEC(__IBMCPP__/100)
+# define COMPILER_VERSION_MINOR DEC(__IBMCPP__/10 % 10)
+# define COMPILER_VERSION_PATCH DEC(__IBMCPP__    % 10)
+
+#elif defined(__NVCOMPILER)
+# define COMPILER_ID "NVHPC"
+# define COMPILER_VERSION_MAJOR DEC(__NVCOMPILER_MAJOR__)
+# define COMPILER_VERSION_MINOR DEC(__NVCOMPILER_MINOR__)
+# if defined(__NVCOMPILER_PATCHLEVEL__)
+#  define COMPILER_VERSION_PATCH DEC(__NVCOMPILER_PATCHLEVEL__)
+# endif
+
+#elif defined(__PGI)
+# define COMPILER_ID "PGI"
+# define COMPILER_VERSION_MAJOR DEC(__PGIC__)
+# define COMPILER_VERSION_MINOR DEC(__PGIC_MINOR__)
+# if defined(__PGIC_PATCHLEVEL__)
+#  define COMPILER_VERSION_PATCH DEC(__PGIC_PATCHLEVEL__)
+# endif
+
+#elif defined(__clang__) && defined(__cray__)
+# define COMPILER_ID "CrayClang"
+# define COMPILER_VERSION_MAJOR DEC(__cray_major__)
+# define COMPILER_VERSION_MINOR DEC(__cray_minor__)
+# define COMPILER_VERSION_PATCH DEC(__cray_patchlevel__)
+# define COMPILER_VERSION_INTERNAL_STR __clang_version__
+
+
+#elif defined(_CRAYC)
+# define COMPILER_ID "Cray"
+# define COMPILER_VERSION_MAJOR DEC(_RELEASE_MAJOR)
+# define COMPILER_VERSION_MINOR DEC(_RELEASE_MINOR)
+
+#elif defined(__TI_COMPILER_VERSION__)
+# define COMPILER_ID "TI"
+  /* __TI_COMPILER_VERSION__ = VVVRRRPPP */
+# define COMPILER_VERSION_MAJOR DEC(__TI_COMPILER_VERSION__/1000000)
+# define COMPILER_VERSION_MINOR DEC(__TI_COMPILER_VERSION__/1000   % 1000)
+# define COMPILER_VERSION_PATCH DEC(__TI_COMPILER_VERSION__        % 1000)
+
+#elif defined(__CLANG_FUJITSU)
+# define COMPILER_ID "FujitsuClang"
+# define COMPILER_VERSION_MAJOR DEC(__FCC_major__)
+# define COMPILER_VERSION_MINOR DEC(__FCC_minor__)
+# define COMPILER_VERSION_PATCH DEC(__FCC_patchlevel__)
+# define COMPILER_VERSION_INTERNAL_STR __clang_version__
+
+
+#elif defined(__FUJITSU)
+# define COMPILER_ID "Fujitsu"
+# if defined(__FCC_version__)
+#   define COMPILER_VERSION __FCC_version__
+# elif defined(__FCC_major__)
+#   define COMPILER_VERSION_MAJOR DEC(__FCC_major__)
+#   define COMPILER_VERSION_MINOR DEC(__FCC_minor__)
+#   define COMPILER_VERSION_PATCH DEC(__FCC_patchlevel__)
+# endif
+# if defined(__fcc_version)
+#   define COMPILER_VERSION_INTERNAL DEC(__fcc_version)
+# elif defined(__FCC_VERSION)
+#   define COMPILER_VERSION_INTERNAL DEC(__FCC_VERSION)
+# endif
+
+
+#elif defined(__ghs__)
+# define COMPILER_ID "GHS"
+/* __GHS_VERSION_NUMBER = VVVVRP */
+# ifdef __GHS_VERSION_NUMBER
+# define COMPILER_VERSION_MAJOR DEC(__GHS_VERSION_NUMBER / 100)
+# define COMPILER_VERSION_MINOR DEC(__GHS_VERSION_NUMBER / 10 % 10)
+# define COMPILER_VERSION_PATCH DEC(__GHS_VERSION_NUMBER      % 10)
+# endif
+
+#elif defined(__TASKING__)
+# define COMPILER_ID "Tasking"
+  # define COMPILER_VERSION_MAJOR DEC(__VERSION__/1000)
+  # define COMPILER_VERSION_MINOR DEC(__VERSION__ % 100)
+# define COMPILER_VERSION_INTERNAL DEC(__VERSION__)
+
+#elif defined(__ORANGEC__)
+# define COMPILER_ID "OrangeC"
+# define COMPILER_VERSION_MAJOR DEC(__ORANGEC_MAJOR__)
+# define COMPILER_VERSION_MINOR DEC(__ORANGEC_MINOR__)
+# define COMPILER_VERSION_PATCH DEC(__ORANGEC_PATCHLEVEL__)
+
+#elif defined(__SCO_VERSION__)
+# define COMPILER_ID "SCO"
+
+#elif defined(__ARMCC_VERSION) && !defined(__clang__)
+# define COMPILER_ID "ARMCC"
+#if __ARMCC_VERSION >= 1000000
+  /* __ARMCC_VERSION = VRRPPPP */
+  # define COMPILER_VERSION_MAJOR DEC(__ARMCC_VERSION/1000000)
+  # define COMPILER_VERSION_MINOR DEC(__ARMCC_VERSION/10000 % 100)
+  # define COMPILER_VERSION_PATCH DEC(__ARMCC_VERSION     % 10000)
+#else
+  /* __ARMCC_VERSION = VRPPPP */
+  # define COMPILER_VERSION_MAJOR DEC(__ARMCC_VERSION/100000)
+  # define COMPILER_VERSION_MINOR DEC(__ARMCC_VERSION/10000 % 10)
+  # define COMPILER_VERSION_PATCH DEC(__ARMCC_VERSION    % 10000)
+#endif
+
+
+#elif defined(__clang__) && defined(__apple_build_version__)
+# define COMPILER_ID "AppleClang"
+# if defined(_MSC_VER)
+#  define SIMULATE_ID "MSVC"
+# endif
+# define COMPILER_VERSION_MAJOR DEC(__clang_major__)
+# define COMPILER_VERSION_MINOR DEC(__clang_minor__)
+# define COMPILER_VERSION_PATCH DEC(__clang_patchlevel__)
+# if defined(_MSC_VER)
+   /* _MSC_VER = VVRR */
+#  define SIMULATE_VERSION_MAJOR DEC(_MSC_VER / 100)
+#  define SIMULATE_VERSION_MINOR DEC(_MSC_VER % 100)
+# endif
+# define COMPILER_VERSION_TWEAK DEC(__apple_build_version__)
+
+#elif defined(__clang__) && defined(__ARMCOMPILER_VERSION)
+# define COMPILER_ID "ARMClang"
+  # define COMPILER_VERSION_MAJOR DEC(__ARMCOMPILER_VERSION/1000000)
+  # define COMPILER_VERSION_MINOR DEC(__ARMCOMPILER_VERSION/10000 % 100)
+  # define COMPILER_VERSION_PATCH DEC(__ARMCOMPILER_VERSION/100   % 100)
+# define COMPILER_VERSION_INTERNAL DEC(__ARMCOMPILER_VERSION)
+
+#elif defined(__clang__) && defined(__ti__)
+# define COMPILER_ID "TIClang"
+  # define COMPILER_VERSION_MAJOR DEC(__ti_major__)
+  # define COMPILER_VERSION_MINOR DEC(__ti_minor__)
+  # define COMPILER_VERSION_PATCH DEC(__ti_patchlevel__)
+# define COMPILER_VERSION_INTERNAL DEC(__ti_version__)
+
+#elif defined(__clang__)
+# define COMPILER_ID "Clang"
+# if defined(_MSC_VER)
+#  define SIMULATE_ID "MSVC"
+# endif
+# define COMPILER_VERSION_MAJOR DEC(__clang_major__)
+# define COMPILER_VERSION_MINOR DEC(__clang_minor__)
+# define COMPILER_VERSION_PATCH DEC(__clang_patchlevel__)
+# if defined(_MSC_VER)
+   /* _MSC_VER = VVRR */
+#  define SIMULATE_VERSION_MAJOR DEC(_MSC_VER / 100)
+#  define SIMULATE_VERSION_MINOR DEC(_MSC_VER % 100)
+# endif
+
+#elif defined(__LCC__) && (defined(__GNUC__) || defined(__GNUG__) || defined(__MCST__))
+# define COMPILER_ID "LCC"
+# define COMPILER_VERSION_MAJOR DEC(__LCC__ / 100)
+# define COMPILER_VERSION_MINOR DEC(__LCC__ % 100)
+# if defined(__LCC_MINOR__)
+#  define COMPILER_VERSION_PATCH DEC(__LCC_MINOR__)
+# endif
+# if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#  define SIMULATE_ID "GNU"
+#  define SIMULATE_VERSION_MAJOR DEC(__GNUC__)
+#  define SIMULATE_VERSION_MINOR DEC(__GNUC_MINOR__)
+#  if defined(__GNUC_PATCHLEVEL__)
+#   define SIMULATE_VERSION_PATCH DEC(__GNUC_PATCHLEVEL__)
+#  endif
+# endif
+
+#elif defined(__GNUC__) || defined(__GNUG__)
+# define COMPILER_ID "GNU"
+# if defined(__GNUC__)
+#  define COMPILER_VERSION_MAJOR DEC(__GNUC__)
+# else
+#  define COMPILER_VERSION_MAJOR DEC(__GNUG__)
+# endif
+# if defined(__GNUC_MINOR__)
+#  define COMPILER_VERSION_MINOR DEC(__GNUC_MINOR__)
+# endif
+# if defined(__GNUC_PATCHLEVEL__)
+#  define COMPILER_VERSION_PATCH DEC(__GNUC_PATCHLEVEL__)
+# endif
+
+#elif defined(_MSC_VER)
+# define COMPILER_ID "MSVC"
+  /* _MSC_VER = VVRR */
+# define COMPILER_VERSION_MAJOR DEC(_MSC_VER / 100)
+# define COMPILER_VERSION_MINOR DEC(_MSC_VER % 100)
+# if defined(_MSC_FULL_VER)
+#  if _MSC_VER >= 1400
+    /* _MSC_FULL_VER = VVRRPPPPP */
+#   define COMPILER_VERSION_PATCH DEC(_MSC_FULL_VER % 100000)
+#  else
+    /* _MSC_FULL_VER = VVRRPPPP */
+#   define COMPILER_VERSION_PATCH DEC(_MSC_FULL_VER % 10000)
+#  endif
+# endif
+# if defined(_MSC_BUILD)
+#  define COMPILER_VERSION_TWEAK DEC(_MSC_BUILD)
+# endif
+
+#elif defined(_ADI_COMPILER)
+# define COMPILER_ID "ADSP"
+#if defined(__VERSIONNUM__)
+  /* __VERSIONNUM__ = 0xVVRRPPTT */
+#  define COMPILER_VERSION_MAJOR DEC(__VERSIONNUM__ >> 24 & 0xFF)
+#  define COMPILER_VERSION_MINOR DEC(__VERSIONNUM__ >> 16 & 0xFF)
+#  define COMPILER_VERSION_PATCH DEC(__VERSIONNUM__ >> 8 & 0xFF)
+#  define COMPILER_VERSION_TWEAK DEC(__VERSIONNUM__ & 0xFF)
+#endif
+
+#elif defined(__IAR_SYSTEMS_ICC__) || defined(__IAR_SYSTEMS_ICC)
+# define COMPILER_ID "IAR"
+# if defined(__VER__) && defined(__ICCARM__)
+#  define COMPILER_VERSION_MAJOR DEC((__VER__) / 1000000)
+#  define COMPILER_VERSION_MINOR DEC(((__VER__) / 1000) % 1000)
+#  define COMPILER_VERSION_PATCH DEC((__VER__) % 1000)
+#  define COMPILER_VERSION_INTERNAL DEC(__IAR_SYSTEMS_ICC__)
+# elif defined(__VER__) && (defined(__ICCAVR__) || defined(__ICCRX__) || defined(__ICCRH850__) || defined(__ICCRL78__) || defined(__ICC430__) || defined(__ICCRISCV__) || defined(__ICCV850__) || defined(__ICC8051__) || defined(__ICCSTM8__))
+#  define COMPILER_VERSION_MAJOR DEC((__VER__) / 100)
+#  define COMPILER_VERSION_MINOR DEC((__VER__) - (((__VER__) / 100)*100))
+#  define COMPILER_VERSION_PATCH DEC(__SUBVERSION__)
+#  define COMPILER_VERSION_INTERNAL DEC(__IAR_SYSTEMS_ICC__)
+# endif
+
+
+/* These compilers are either not known or too old to define an
+  identification macro.  Try to identify the platform and guess that
+  it is the native compiler.  */
+#elif defined(__hpux) || defined(__hpua)
+# define COMPILER_ID "HP"
+
+#else /* unknown compiler */
+# define COMPILER_ID ""
+#endif
+
+/* Construct the string literal in pieces to prevent the source from
+   getting matched.  Store it in a pointer rather than an array
+   because some compilers will just produce instructions to fill the
+   array rather than assigning a pointer to a static array.  */
+char const* info_compiler = "INFO" ":" "compiler[" COMPILER_ID "]";
+#ifdef SIMULATE_ID
+char const* info_simulate = "INFO" ":" "simulate[" SIMULATE_ID "]";
+#endif
+
+#ifdef __QNXNTO__
+char const* qnxnto = "INFO" ":" "qnxnto[]";
+#endif
+
+#if defined(__CRAYXT_COMPUTE_LINUX_TARGET)
+char const *info_cray = "INFO" ":" "compiler_wrapper[CrayPrgEnv]";
+#endif
+
+#define STRINGIFY_HELPER(X) #X
+#define STRINGIFY(X) STRINGIFY_HELPER(X)
+
+/* Identify known platforms by name.  */
+#if defined(__linux) || defined(__linux__) || defined(linux)
+# define PLATFORM_ID "Linux"
+
+#elif defined(__MSYS__)
+# define PLATFORM_ID "MSYS"
+
+#elif defined(__CYGWIN__)
+# define PLATFORM_ID "Cygwin"
+
+#elif defined(__MINGW32__)
+# define PLATFORM_ID "MinGW"
+
+#elif defined(__APPLE__)
+# define PLATFORM_ID "Darwin"
+
+#elif defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+# define PLATFORM_ID "Windows"
+
+#elif defined(__FreeBSD__) || defined(__FreeBSD)
+# define PLATFORM_ID "FreeBSD"
+
+#elif defined(__NetBSD__) || defined(__NetBSD)
+# define PLATFORM_ID "NetBSD"
+
+#elif defined(__OpenBSD__) || defined(__OPENBSD)
+# define PLATFORM_ID "OpenBSD"
+
+#elif defined(__sun) || defined(sun)
+# define PLATFORM_ID "SunOS"
+
+#elif defined(_AIX) || defined(__AIX) || defined(__AIX__) || defined(__aix) || defined(__aix__)
+# define PLATFORM_ID "AIX"
+
+#elif defined(__hpux) || defined(__hpux__)
+# define PLATFORM_ID "HP-UX"
+
+#elif defined(__HAIKU__)
+# define PLATFORM_ID "Haiku"
+
+#elif defined(__BeOS) || defined(__BEOS__) || defined(_BEOS)
+# define PLATFORM_ID "BeOS"
+
+#elif defined(__QNX__) || defined(__QNXNTO__)
+# define PLATFORM_ID "QNX"
+
+#elif defined(__tru64) || defined(_tru64) || defined(__TRU64__)
+# define PLATFORM_ID "Tru64"
+
+#elif defined(__riscos) || defined(__riscos__)
+# define PLATFORM_ID "RISCos"
+
+#elif defined(__sinix) || defined(__sinix__) || defined(__SINIX__)
+# define PLATFORM_ID "SINIX"
+
+#elif defined(__UNIX_SV__)
+# define PLATFORM_ID "UNIX_SV"
+
+#elif defined(__bsdos__)
+# define PLATFORM_ID "BSDOS"
+
+#elif defined(_MPRAS) || defined(MPRAS)
+# define PLATFORM_ID "MP-RAS"
+
+#elif defined(__osf) || defined(__osf__)
+# define PLATFORM_ID "OSF1"
+
+#elif defined(_SCO_SV) || defined(SCO_SV) || defined(sco_sv)
+# define PLATFORM_ID "SCO_SV"
+
+#elif defined(__ultrix) || defined(__ultrix__) || defined(_ULTRIX)
+# define PLATFORM_ID "ULTRIX"
+
+#elif defined(__XENIX__) || defined(_XENIX) || defined(XENIX)
+# define PLATFORM_ID "Xenix"
+
+#elif defined(__WATCOMC__)
+# if defined(__LINUX__)
+#  define PLATFORM_ID "Linux"
+
+# elif defined(__DOS__)
+#  define PLATFORM_ID "DOS"
+
+# elif defined(__OS2__)
+#  define PLATFORM_ID "OS2"
+
+# elif defined(__WINDOWS__)
+#  define PLATFORM_ID "Windows3x"
+
+# elif defined(__VXWORKS__)
+#  define PLATFORM_ID "VxWorks"
+
+# else /* unknown platform */
+#  define PLATFORM_ID
+# endif
+
+#elif defined(__INTEGRITY)
+# if defined(INT_178B)
+#  define PLATFORM_ID "Integrity178"
+
+# else /* regular Integrity */
+#  define PLATFORM_ID "Integrity"
+# endif
+
+# elif defined(_ADI_COMPILER)
+#  define PLATFORM_ID "ADSP"
+
+#else /* unknown platform */
+# define PLATFORM_ID
+
+#endif
+
+/* For windows compilers MSVC and Intel we can determine
+   the architecture of the compiler being used.  This is because
+   the compilers do not have flags that can change the architecture,
+   but rather depend on which compiler is being used
+*/
+#if defined(_WIN32) && defined(_MSC_VER)
+# if defined(_M_IA64)
+#  define ARCHITECTURE_ID "IA64"
+
+# elif defined(_M_ARM64EC)
+#  define ARCHITECTURE_ID "ARM64EC"
+
+# elif defined(_M_X64) || defined(_M_AMD64)
+#  define ARCHITECTURE_ID "x64"
+
+# elif defined(_M_IX86)
+#  define ARCHITECTURE_ID "X86"
+
+# elif defined(_M_ARM64)
+#  define ARCHITECTURE_ID "ARM64"
+
+# elif defined(_M_ARM)
+#  if _M_ARM == 4
+#   define ARCHITECTURE_ID "ARMV4I"
+#  elif _M_ARM == 5
+#   define ARCHITECTURE_ID "ARMV5I"
+#  else
+#   define ARCHITECTURE_ID "ARMV" STRINGIFY(_M_ARM)
+#  endif
+
+# elif defined(_M_MIPS)
+#  define ARCHITECTURE_ID "MIPS"
+
+# elif defined(_M_SH)
+#  define ARCHITECTURE_ID "SHx"
+
+# else /* unknown architecture */
+#  define ARCHITECTURE_ID ""
+# endif
+
+#elif defined(__WATCOMC__)
+# if defined(_M_I86)
+#  define ARCHITECTURE_ID "I86"
+
+# elif defined(_M_IX86)
+#  define ARCHITECTURE_ID "X86"
+
+# else /* unknown architecture */
+#  define ARCHITECTURE_ID ""
+# endif
+
+#elif defined(__IAR_SYSTEMS_ICC__) || defined(__IAR_SYSTEMS_ICC)
+# if defined(__ICCARM__)
+#  define ARCHITECTURE_ID "ARM"
+
+# elif defined(__ICCRX__)
+#  define ARCHITECTURE_ID "RX"
+
+# elif defined(__ICCRH850__)
+#  define ARCHITECTURE_ID "RH850"
+
+# elif defined(__ICCRL78__)
+#  define ARCHITECTURE_ID "RL78"
+
+# elif defined(__ICCRISCV__)
+#  define ARCHITECTURE_ID "RISCV"
+
+# elif defined(__ICCAVR__)
+#  define ARCHITECTURE_ID "AVR"
+
+# elif defined(__ICC430__)
+#  define ARCHITECTURE_ID "MSP430"
+
+# elif defined(__ICCV850__)
+#  define ARCHITECTURE_ID "V850"
+
+# elif defined(__ICC8051__)
+#  define ARCHITECTURE_ID "8051"
+
+# elif defined(__ICCSTM8__)
+#  define ARCHITECTURE_ID "STM8"
+
+# else /* unknown architecture */
+#  define ARCHITECTURE_ID ""
+# endif
+
+#elif defined(__ghs__)
+# if defined(__PPC64__)
+#  define ARCHITECTURE_ID "PPC64"
+
+# elif defined(__ppc__)
+#  define ARCHITECTURE_ID "PPC"
+
+# elif defined(__ARM__)
+#  define ARCHITECTURE_ID "ARM"
+
+# elif defined(__x86_64__)
+#  define ARCHITECTURE_ID "x64"
+
+# elif defined(__i386__)
+#  define ARCHITECTURE_ID "X86"
+
+# else /* unknown architecture */
+#  define ARCHITECTURE_ID ""
+# endif
+
+#elif defined(__clang__) && defined(__ti__)
+# if defined(__ARM_ARCH)
+#  define ARCHITECTURE_ID "Arm"
+
+# else /* unknown architecture */
+#  define ARCHITECTURE_ID ""
+# endif
+
+#elif defined(__TI_COMPILER_VERSION__)
+# if defined(__TI_ARM__)
+#  define ARCHITECTURE_ID "ARM"
+
+# elif defined(__MSP430__)
+#  define ARCHITECTURE_ID "MSP430"
+
+# elif defined(__TMS320C28XX__)
+#  define ARCHITECTURE_ID "TMS320C28x"
+
+# elif defined(__TMS320C6X__) || defined(_TMS320C6X)
+#  define ARCHITECTURE_ID "TMS320C6x"
+
+# else /* unknown architecture */
+#  define ARCHITECTURE_ID ""
+# endif
+
+# elif defined(__ADSPSHARC__)
+#  define ARCHITECTURE_ID "SHARC"
+
+# elif defined(__ADSPBLACKFIN__)
+#  define ARCHITECTURE_ID "Blackfin"
+
+#elif defined(__TASKING__)
+
+# if defined(__CTC__) || defined(__CPTC__)
+#  define ARCHITECTURE_ID "TriCore"
+
+# elif defined(__CMCS__)
+#  define ARCHITECTURE_ID "MCS"
+
+# elif defined(__CARM__)
+#  define ARCHITECTURE_ID "ARM"
+
+# elif defined(__CARC__)
+#  define ARCHITECTURE_ID "ARC"
+
+# elif defined(__C51__)
+#  define ARCHITECTURE_ID "8051"
+
+# elif defined(__CPCP__)
+#  define ARCHITECTURE_ID "PCP"
+
+# else
+#  define ARCHITECTURE_ID ""
+# endif
+
+#else
+#  define ARCHITECTURE_ID
+#endif
+
+/* Convert integer to decimal digit literals.  */
+#define DEC(n)                   \
+  ('0' + (((n) / 10000000)%10)), \
+  ('0' + (((n) / 1000000)%10)),  \
+  ('0' + (((n) / 100000)%10)),   \
+  ('0' + (((n) / 10000)%10)),    \
+  ('0' + (((n) / 1000)%10)),     \
+  ('0' + (((n) / 100)%10)),      \
+  ('0' + (((n) / 10)%10)),       \
+  ('0' +  ((n) % 10))
+
+/* Convert integer to hex digit literals.  */
+#define HEX(n)             \
+  ('0' + ((n)>>28 & 0xF)), \
+  ('0' + ((n)>>24 & 0xF)), \
+  ('0' + ((n)>>20 & 0xF)), \
+  ('0' + ((n)>>16 & 0xF)), \
+  ('0' + ((n)>>12 & 0xF)), \
+  ('0' + ((n)>>8  & 0xF)), \
+  ('0' + ((n)>>4  & 0xF)), \
+  ('0' + ((n)     & 0xF))
+
+/* Construct a string literal encoding the version number. */
+#ifdef COMPILER_VERSION
+char const* info_version = "INFO" ":" "compiler_version[" COMPILER_VERSION "]";
+
+/* Construct a string literal encoding the version number components. */
+#elif defined(COMPILER_VERSION_MAJOR)
+char const info_version[] = {
+  'I', 'N', 'F', 'O', ':',
+  'c','o','m','p','i','l','e','r','_','v','e','r','s','i','o','n','[',
+  COMPILER_VERSION_MAJOR,
+# ifdef COMPILER_VERSION_MINOR
+  '.', COMPILER_VERSION_MINOR,
+#  ifdef COMPILER_VERSION_PATCH
+   '.', COMPILER_VERSION_PATCH,
+#   ifdef COMPILER_VERSION_TWEAK
+    '.', COMPILER_VERSION_TWEAK,
+#   endif
+#  endif
+# endif
+  ']','\0'};
+#endif
+
+/* Construct a string literal encoding the internal version number. */
+#ifdef COMPILER_VERSION_INTERNAL
+char const info_version_internal[] = {
+  'I', 'N', 'F', 'O', ':',
+  'c','o','m','p','i','l','e','r','_','v','e','r','s','i','o','n','_',
+  'i','n','t','e','r','n','a','l','[',
+  COMPILER_VERSION_INTERNAL,']','\0'};
+#elif defined(COMPILER_VERSION_INTERNAL_STR)
+char const* info_version_internal = "INFO" ":" "compiler_version_internal[" COMPILER_VERSION_INTERNAL_STR "]";
+#endif
+
+/* Construct a string literal encoding the version number components. */
+#ifdef SIMULATE_VERSION_MAJOR
+char const info_simulate_version[] = {
+  'I', 'N', 'F', 'O', ':',
+  's','i','m','u','l','a','t','e','_','v','e','r','s','i','o','n','[',
+  SIMULATE_VERSION_MAJOR,
+# ifdef SIMULATE_VERSION_MINOR
+  '.', SIMULATE_VERSION_MINOR,
+#  ifdef SIMULATE_VERSION_PATCH
+   '.', SIMULATE_VERSION_PATCH,
+#   ifdef SIMULATE_VERSION_TWEAK
+    '.', SIMULATE_VERSION_TWEAK,
+#   endif
+#  endif
+# endif
+  ']','\0'};
+#endif
+
+/* Construct the string literal in pieces to prevent the source from
+   getting matched.  Store it in a pointer rather than an array
+   because some compilers will just produce instructions to fill the
+   array rather than assigning a pointer to a static array.  */
+char const* info_platform = "INFO" ":" "platform[" PLATFORM_ID "]";
+char const* info_arch = "INFO" ":" "arch[" ARCHITECTURE_ID "]";
+
+
+
+#define CXX_STD_98 199711L
+#define CXX_STD_11 201103L
+#define CXX_STD_14 201402L
+#define CXX_STD_17 201703L
+#define CXX_STD_20 202002L
+#define CXX_STD_23 202302L
+
+#if defined(__INTEL_COMPILER) && defined(_MSVC_LANG)
+#  if _MSVC_LANG > CXX_STD_17
+#    define CXX_STD _MSVC_LANG
+#  elif _MSVC_LANG == CXX_STD_17 && defined(__cpp_aggregate_paren_init)
+#    define CXX_STD CXX_STD_20
+#  elif _MSVC_LANG > CXX_STD_14 && __cplusplus > CXX_STD_17
+#    define CXX_STD CXX_STD_20
+#  elif _MSVC_LANG > CXX_STD_14
+#    define CXX_STD CXX_STD_17
+#  elif defined(__INTEL_CXX11_MODE__) && defined(__cpp_aggregate_nsdmi)
+#    define CXX_STD CXX_STD_14
+#  elif defined(__INTEL_CXX11_MODE__)
+#    define CXX_STD CXX_STD_11
+#  else
+#    define CXX_STD CXX_STD_98
+#  endif
+#elif defined(_MSC_VER) && defined(_MSVC_LANG)
+#  if _MSVC_LANG > __cplusplus
+#    define CXX_STD _MSVC_LANG
+#  else
+#    define CXX_STD __cplusplus
+#  endif
+#elif defined(__NVCOMPILER)
+#  if __cplusplus == CXX_STD_17 && defined(__cpp_aggregate_paren_init)
+#    define CXX_STD CXX_STD_20
+#  else
+#    define CXX_STD __cplusplus
+#  endif
+#elif defined(__INTEL_COMPILER) || defined(__PGI)
+#  if __cplusplus == CXX_STD_11 && defined(__cpp_namespace_attributes)
+#    define CXX_STD CXX_STD_17
+#  elif __cplusplus == CXX_STD_11 && defined(__cpp_aggregate_nsdmi)
+#    define CXX_STD CXX_STD_14
+#  else
+#    define CXX_STD __cplusplus
+#  endif
+#elif (defined(__IBMCPP__) || defined(__ibmxl__)) && defined(__linux__)
+#  if __cplusplus == CXX_STD_11 && defined(__cpp_aggregate_nsdmi)
+#    define CXX_STD CXX_STD_14
+#  else
+#    define CXX_STD __cplusplus
+#  endif
+#elif __cplusplus == 1 && defined(__GXX_EXPERIMENTAL_CXX0X__)
+#  define CXX_STD CXX_STD_11
+#else
+#  define CXX_STD __cplusplus
+#endif
+
+const char* info_language_standard_default = "INFO" ":" "standard_default["
+#if CXX_STD > CXX_STD_23
+  "26"
+#elif CXX_STD > CXX_STD_20
+  "23"
+#elif CXX_STD > CXX_STD_17
+  "20"
+#elif CXX_STD > CXX_STD_14
+  "17"
+#elif CXX_STD > CXX_STD_11
+  "14"
+#elif CXX_STD >= CXX_STD_11
+  "11"
+#else
+  "98"
+#endif
+"]";
+
+const char* info_language_extensions_default = "INFO" ":" "extensions_default["
+#if (defined(__clang__) || defined(__GNUC__) || defined(__xlC__) ||           \
+     defined(__TI_COMPILER_VERSION__)) &&                                     \
+  !defined(__STRICT_ANSI__)
+  "ON"
+#else
+  "OFF"
+#endif
+"]";
+
+/*--------------------------------------------------------------------------*/
+
+int main(int argc, char* argv[])
+{
+  int require = 0;
+  require += info_compiler[argc];
+  require += info_platform[argc];
+  require += info_arch[argc];
+#ifdef COMPILER_VERSION_MAJOR
+  require += info_version[argc];
+#endif
+#ifdef COMPILER_VERSION_INTERNAL
+  require += info_version_internal[argc];
+#endif
+#ifdef SIMULATE_ID
+  require += info_simulate[argc];
+#endif
+#ifdef SIMULATE_VERSION_MAJOR
+  require += info_simulate_version[argc];
+#endif
+#if defined(__CRAYXT_COMPUTE_LINUX_TARGET)
+  require += info_cray[argc];
+#endif
+  require += info_language_standard_default[argc];
+  require += info_language_extensions_default[argc];
+  (void)argv;
+  return require;
+}
+.

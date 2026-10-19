@@ -9,6 +9,7 @@ class Usuario;
 
 class SolicitudAmistad
 {
+    friend class Almacenamiento;
 private:
     Usuario* emisor;
     Usuario* receptor;

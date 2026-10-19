@@ -9,6 +9,7 @@ class Album;
 
 class Usuario
 {
+    friend class Almacenamiento;
 private:
     string nombreUsuario;
     string fechaNacimiento;
