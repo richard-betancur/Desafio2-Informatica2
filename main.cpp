@@ -15,7 +15,8 @@
 #include "foto.h"
 
 using namespace std;
-namespace fs = std::filesystem;
+
+namespace fs = filesystem;
 
 // --------------------------------------------------
 // Lectura segura
@@ -207,7 +208,7 @@ bool prepararUsuarios(RedSocial& red, Almacenamiento& almacenamiento)
     cout << "\nCarpeta de ejecucion:\n";
     cout << fs::current_path().string() << "\n";
 
-    const string archivoDatos = "udebook.dat";
+    const string archivoDatos = "udeabook.dat";
 
     cout << "Archivo de datos: "
          << fs::absolute(archivoDatos).string() << "\n";
@@ -780,7 +781,7 @@ int main()
         {
             cout << "\nGuardando todos los datos...\n";
 
-            if (almacenamiento.guardarTodo(red, "udebook.dat"))
+            if (almacenamiento.guardarTodo(red, "udeabook.dat"))
                 cout << "Datos guardados correctamente.\n";
             else
                 cout << "No se pudieron guardar todos los datos.\n";

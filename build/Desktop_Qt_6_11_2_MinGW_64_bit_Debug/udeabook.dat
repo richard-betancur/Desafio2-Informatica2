@@ -1008,15 +1008,15 @@ ALBUMES 9
 "2026-08-20" 175000 "imagenes/admin_4.png" 3
 "2026-09-25" 210000 "imagenes/admin_5.png" 1
 "camila" "Viajes" "albumes/camila" 0 5
-"2026-05-10" 145000 "imagenes/camila_viaje_1.png" 2
+"2026-05-10" 145000 "imagenes/camila_viaje_1.png" 1
 "2026-06-12" 198000 "imagenes/camila_viaje_2.png" 1
-"2026-07-15" 160000 "imagenes/camila_viaje_3.png" 0
+"2026-07-15" 160000 "imagenes/camila_viaje_3.png" 1
 "2026-08-20" 175000 "imagenes/camila_viaje_4.png" 3
 "2026-09-25" 210000 "imagenes/camila_viaje_5.png" 1
 "camila" "Otros viajes" "albumes/camila_2" 0 5
 "2026-05-10" 145000 "imagenes/camila_extra_1.png" 2
 "2026-06-12" 198000 "imagenes/camila_extra_2.png" 1
-"2026-07-15" 160000 "imagenes/camila_extra_3.png" 0
+"2026-07-15" 160000 "imagenes/camila_extra_3.png" 5
 "2026-08-20" 175000 "imagenes/camila_extra_4.png" 3
 "2026-09-25" 210000 "imagenes/camila_extra_5.png" 1
 "juan" "Familia" "albumes/juan" 1 5
@@ -1108,7 +1108,7 @@ AMISTADES 52
 "usuario019" "juan"
 "usuario020" "camila"
 "usuario020" "juan"
-SOLICITUDES 53
+SOLICITUDES 55
 "admin" "camila" "2026-10-18" 1
 "admin" "juan" "2026-10-18" 1
 "admin" "diego" "2026-10-18" 1
@@ -1162,6 +1162,8 @@ SOLICITUDES 53
 "usuario020" "camila" "2026-10-18" 1
 "usuario020" "juan" "2026-10-18" 1
 "admin" "usuario001" "2026-10-18" 0
+"admin" "usuario002" "2026-10-18" 0
+"admin" "sofia" "2026-10-18" 0
 MENSAJES 6
 "camila" "admin" "Hola, bienvenido a Ude@Book!" "2026-09-01 10:00" 0
 "juan" "admin" "Este es un mensaje de septiembre." "2026-09-10 14:30" 0

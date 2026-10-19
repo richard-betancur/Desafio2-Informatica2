@@ -5,7 +5,7 @@
 
 class RedSocial;
 
-// Persistencia local de toda la red social en un único archivo de texto.
+// Persistencia local de toda la red social en un unico archivo de texto.
 class Almacenamiento
 {
 public:

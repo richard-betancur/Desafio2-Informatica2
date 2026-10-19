@@ -36,7 +36,7 @@ private:
     int cantidadMensajes;
     int capacidadMensajes;
 
-    // Perfiles ya mostrados en esta sesion (para evitar repetidos al actualizar).
+    // Perfiles ya mostrados
     Usuario** perfilesMostrados;
     int cantidadPerfilesMostrados;
     int capacidadPerfilesMostrados;

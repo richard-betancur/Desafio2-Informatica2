@@ -1,8 +1,8 @@
 #include "foto.h"
 
-Foto::Foto(const std::string& fecha,
+Foto::Foto(const string& fecha,
            unsigned long long tamano,
-           const std::string& rutaArchivo,
+           const string& rutaArchivo,
            int likes)
     : fechaCaptura(fecha),
     tamanoBytes(tamano),
@@ -19,7 +19,7 @@ Foto::Foto(const Foto& otra)
 {
 }
 
-std::string Foto::getFechaCaptura() const
+string Foto::getFechaCaptura() const
 {
     return fechaCaptura;
 }
@@ -29,7 +29,7 @@ unsigned long long Foto::getTamanoBytes() const
     return tamanoBytes;
 }
 
-std::string Foto::getRuta() const
+string Foto::getRuta() const
 {
     return ruta;
 }

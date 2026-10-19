@@ -129,7 +129,7 @@ bool Album::puedeVerlo(const Usuario* visitante, const Usuario* propietario, boo
     return false;
 }
 
-// Agregar una foto preexistente
+// Agregar una foto
 bool Album::agregarFoto(const Foto& foto)
 {
     if (!foto.esValida())
